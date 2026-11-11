@@ -1,6 +1,6 @@
 # Site architecture
 
-The static Astro site follows [ADR 0026](../docs/adr/0026-astro-site-stack.md), [AGENTS.md](AGENTS.md), and [DESIGN.md](DESIGN.md).
+The static Astro site follows [ADR 0001](docs/adr/0001-astro-site-stack.md), [AGENTS.md](AGENTS.md), and [DESIGN.md](DESIGN.md).
 
 ## Routes and data
 

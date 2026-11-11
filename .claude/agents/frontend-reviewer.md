@@ -1,6 +1,6 @@
 ---
 name: frontend-reviewer
-description: Read-only website reviewer. Use after changing files under site/ and before committing, or when a full site audit is explicitly requested.
+description: Read-only website reviewer. Use after changing site files and before committing, or when a full site audit is explicitly requested.
 model: opus
 effort: high
 tools: Read, Grep, Glob, Bash

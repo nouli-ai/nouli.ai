@@ -5,6 +5,8 @@ date: 2026-11-09
 
 # Build the website with Astro and a small, verified toolchain
 
+Originally ADR 0026 in [nouli-ai/nouli](https://github.com/nouli-ai/nouli), when the website lived in that repository's `site/` directory.
+
 ## Context
 
 The website under `site/` is 21 hand-written HTML pages, one global stylesheet,
@@ -88,4 +90,4 @@ Each fact and shared element has one source, and invalid content fails the
 build. Pages work without JavaScript, and interactive parts clean up after
 themselves. The site gains a Node toolchain whose versions are pinned in its
 lockfile, and the Oxfmt Astro option must stay enabled for `.astro` files to be
-formatted. [site/DESIGN.md](../../site/DESIGN.md) records the visual design.
+formatted. [DESIGN.md](../../DESIGN.md) records the visual design.

@@ -2,7 +2,7 @@
 """Render recorded native TUI cells to GIF, PNG and WebM. Needs Pillow and FFmpeg.
 
 python tools/render-tui-media.py --replay src/data/replays/wide.json \
-  --output ../.github/readme --video public/media/tui-workshop.webm --ffmpeg PATH
+  --output NOULI_REPO/.github/readme --video public/media/tui-workshop.webm --ffmpeg PATH
 No inference or terminal interaction occurs during rendering.
 """
 import argparse
@@ -99,12 +99,12 @@ if args.output:
                    duration=round(1000 / fps), loop=0, optimize=True, disposal=1)
     provenance = dict(application=replay['application'],
         capture='Native PTY recording rendered from terminal cells',
-        answer_source='site/src/data/graphs/home.json', live_provider_calls=0,
+        answer_source='nouli-ai/nouli.ai src/data/graphs/home.json', live_provider_calls=0,
         local_fixture_calls=len(replay['steps']), playback_speed=rate,
         frames_per_second=fps, final_hold_seconds=1,
         source_sha256=hashlib.sha256(args.replay.read_bytes()).hexdigest(),
         source_recording=str(args.replay),
-        renderer='site/tools/render-tui-media.py',
+        renderer='nouli-ai/nouli.ai tools/render-tui-media.py',
         dimensions=dict(columns=replay['columns'], lines=replay['lines'], width=poster.width, height=poster.height),
         recorded_at=json.loads((args.replay.parent / 'provenance.json').read_text())['wide']['recorded_at'],
         binary_sha256=json.loads((args.replay.parent / 'provenance.json').read_text())['wide']['binary_sha256'],

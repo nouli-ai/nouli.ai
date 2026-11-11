@@ -2,7 +2,7 @@
 // session in a PTY, answering from src/data/graphs/home.json through a local stub,
 // then write the replay (wide.json), refreshed graph data and provenance.
 //
-//   node tools/record-cli-replay.mjs --nouli ../target/release/nouli --python /path/to/python [--columns 64]
+//   node tools/record-cli-replay.mjs --nouli NOULI_REPO/target/release/nouli --python /path/to/python [--columns 64]
 //
 // The default 160 columns write wide.json, with the decision graph beside the
 // transcript, and refresh graph.json. Narrower recordings write narrow.json

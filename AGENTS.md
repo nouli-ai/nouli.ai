@@ -1,6 +1,6 @@
-# Website
+# Repository Guidelines
 
-The site at https://nouli.ai/ is built with Astro under [ADR 0026](../docs/adr/0026-astro-site-stack.md). Follow [DESIGN.md](DESIGN.md) for visual and interaction decisions.
+This repository is the website at https://nouli.ai/, built with Astro under [ADR 0001](docs/adr/0001-astro-site-stack.md). Follow [DESIGN.md](DESIGN.md) for visual and interaction decisions. The Nouli CLI, library and docs live in [nouli-ai/nouli](https://github.com/nouli-ai/nouli).
 
 ## Pages work without JavaScript
 
@@ -61,14 +61,14 @@ The site at https://nouli.ai/ is built with Astro under [ADR 0026](../docs/adr/0
 
 - Set a content security policy through Astro's CSP support, and render content through Astro's escaping. `set:html` appears only in `JsonLd.astro`, which emits structured data with `<` escaped; a unit test enforces this.
 - Add third-party scripts, fonts, or trackers only through an ADR.
-- Treat `public/install.sh` as product code: keep it covered by its tests and ShellCheck.
+- `public/install.sh` is the published copy of `scripts/install.sh` from the latest stable `nouli` release, synced by the release-sync workflow. Change the script in `nouli`, not here. Keep the published copy covered by its tests and ShellCheck.
 
 ## Recorded decisions
 
 - Graph and capture data in `src/data/` comes from saved Nouli sessions through the export tools; see [Tools](ARCHITECTURE.md#tools). Preserve recorded answers, probabilities, ancestry, and context, and explain model errors in the page text.
 - Keep browsing, building, and testing independent of provider credentials and live model calls. Recording new sessions is a separate step that can incur provider charges.
-- Preserve answer meanings in readouts: choice selects a supplied option, noul is the probability of yes, and score is an expected rubric index that can be fractional. See [decision contracts](../docs/contracts/decisions.md).
-- Verify every CLI command and configuration shown on a page against the current implementation and [reference documentation](../docs/).
+- Preserve answer meanings in readouts: choice selects a supplied option, noul is the probability of yes, and score is an expected rubric index that can be fractional. See [decision contracts](https://github.com/nouli-ai/nouli/blob/main/docs/contracts/decisions.md).
+- Verify every CLI command and configuration shown on a page against the current implementation and [reference documentation](https://github.com/nouli-ai/nouli/tree/main/docs).
 
 ## Tooling
 
@@ -80,8 +80,34 @@ The site at https://nouli.ai/ is built with Astro under [ADR 0026](../docs/adr/0
 
 ## Validation
 
-Use Node.js 24 or later. Run `npm run check` from `site/`; CI runs the same command. Before committing a visual or interaction change, screenshot the affected pages with Playwright at desktop and 390 px widths and inspect them. Exercise keyboard use and reduced motion where the change touches them.
+Use Node.js 24 or later. Run `npm run check` from the repository root; CI runs the same command. Before committing a visual or interaction change, screenshot the affected pages with Playwright at desktop and 390 px widths and inspect them. Exercise keyboard use and reduced motion where the change touches them.
 
 ## Review
 
 After changing site files, have the frontend reviewer agent (`frontend-reviewer` in Claude Code, `frontend_reviewer` in Codex) review the change, and address its findings before committing.
+
+## Public copy
+
+Use direct, concrete descriptions in README and website prose. Avoid marketing
+slogans built around "X keeps the Y" or paired model/harness taglines.
+
+## Architecture Decision Records
+
+- This repository records architectural decisions in [docs/adr/](docs/adr/). Read relevant ADRs before changing architecture or established design choices.
+- Record significant architectural decisions in `docs/adr/NNNN-short-title.md`, using the next sequential four-digit number. Include the context, decision, considered alternatives, and consequences; follow the existing ADR format with `status` and `date` frontmatter.
+- When replacing an accepted decision, add a new ADR and link the records to show which decision supersedes the earlier one.
+
+## Commit & Pull Request Guidelines
+
+- **Branches:** `main` accepts changes only through pull requests, and force pushes are blocked. Do your work on a local branch. Never push, open a pull request, or merge without the user's explicit approval. The one exception is the release sync: its workflow opens a pull request that syncs `public/install.sh` and release data from a `nouli` release, and merges it automatically when the checks pass.
+- **Commits:** Use `Imperative command`. Write the subject as an
+  instruction to edit the repository. A complete subject names both the codebase artifact and the
+  edit applied to it, using a repository-edit verb such as `add`, `move`, `split`, `extract`,
+  `replace`, `remove`, or `rename`. Keep the message as a short subject line. You can add at most one or
+  two body lines if absolutely necessary.
+  - **Examples of good commit messages:**
+    - `Add pagination middleware to collection endpoints`
+    - `Split customer addresses into normalized tables`
+    - `Extract checkout form into reusable component`
+  - **Reasoning:** States the repository mutation directly, so the commit history reads as a
+    sequence of concrete operations that transformed the project.
