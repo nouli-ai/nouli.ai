@@ -39,3 +39,13 @@ jobs:
       # Format, lint, ShellCheck, types, unit tests, build, built-output checks, and browser tests.
       - name: Check site
         run: npm run check
+  required:
+    name: Required checks
+    needs: [lint-ci, site]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require every check to pass
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')
+        run: exit 1
