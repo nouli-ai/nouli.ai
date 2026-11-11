@@ -56,6 +56,11 @@ jobs:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
         run: |
+          # Releases before v0.5.2 predate scripts/install.sh; there is nothing to sync from them.
+          if [ ! -f .nouli/scripts/install.sh ]; then
+            echo "nouli $SOURCE_REF has no scripts/install.sh; nothing to sync."
+            exit 0
+          fi
           cp .nouli/scripts/install.sh public/install.sh
           if git diff --quiet -- public/install.sh; then
             echo "public/install.sh already matches nouli $SOURCE_REF."
