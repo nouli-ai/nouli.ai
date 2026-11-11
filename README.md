@@ -15,6 +15,14 @@ npm run check                     # format, lint, types, unit tests, build, buil
 
 `npm run format` applies formatting.
 
+## Deploy and release sync
+
+- `.github/workflows/ci.yml` runs `npm run check` and Actionlint on every pull request and on `main`.
+- `.github/workflows/pages.yml` builds and publishes the site to GitHub Pages on every push to `main`.
+- `.github/workflows/sync-nouli.yml` keeps `public/install.sh` identical to `scripts/install.sh` in [nouli-ai/nouli](https://github.com/nouli-ai/nouli). When a stable nouli release is published, nouli sends a `nouli-release-published` dispatch. The workflow copies the script from that tag and, if it changed, opens a pull request that merges itself once the checks pass. Run it by hand with a tag, plus an optional `ref`, to publish an urgent installer fix.
+
+The sync authenticates as the `nouli-tap-updater` GitHub App, using the `TAP_APP_CLIENT_ID` variable and the `TAP_APP_PRIVATE_KEY` secret.
+
 ## Refresh recordings and media
 
 Recording and export tools live in `tools/`; their existing Python, JavaScript, and shell are preserved. Run them from the repository root. `NOULI_REPO` below is a checkout of [nouli-ai/nouli](https://github.com/nouli-ai/nouli), for the `nouli` binary and the README media it hosts. Committed captures and replays keep normal builds independent of these tools and provider credentials.

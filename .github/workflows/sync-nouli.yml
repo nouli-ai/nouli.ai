@@ -1,0 +1,78 @@
+# Publish the install script from each stable nouli release. nouli's release workflow sends a
+# repository_dispatch here; this opens a pull request that merges itself once the checks pass.
+name: Sync from nouli
+on:
+  repository_dispatch:
+    types: [nouli-release-published]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Published stable vMAJOR.MINOR.PATCH tag
+        type: string
+        required: true
+      ref:
+        description: Commit or branch of nouli to copy instead of the tag, for urgent installer fixes
+        type: string
+        required: false
+permissions: {}
+concurrency:
+  group: sync-nouli-${{ inputs.release_tag || github.event.client_payload.release_tag }}
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      RELEASE_TAG: ${{ inputs.release_tag || github.event.client_payload.release_tag }}
+      SOURCE_REF: ${{ inputs.ref || inputs.release_tag || github.event.client_payload.release_tag }}
+    steps:
+      - name: Check the release tag
+        run: '[[ "$RELEASE_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]'
+      # Pull requests opened with GITHUB_TOKEN don't trigger CI, so the sync uses the App's token.
+      - name: Authenticate as the release app
+        id: app-token
+        uses: actions/create-github-app-token@v3.3.0
+        with:
+          client-id: ${{ vars.TAP_APP_CLIENT_ID }}
+          private-key: ${{ secrets.TAP_APP_PRIVATE_KEY }}
+          owner: nouli-ai
+          repositories: nouli.ai
+          permission-contents: write
+          permission-pull-requests: write
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+      - name: Check out nouli at the release
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: nouli-ai/nouli
+          ref: ${{ env.SOURCE_REF }}
+          path: .nouli
+          persist-credentials: false
+          sparse-checkout: scripts/install.sh
+          sparse-checkout-cone-mode: false
+      - name: Open a sync pull request if the installer changed
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+        run: |
+          cp .nouli/scripts/install.sh public/install.sh
+          if git diff --quiet -- public/install.sh; then
+            echo "public/install.sh already matches nouli $SOURCE_REF."
+            exit 0
+          fi
+          branch="sync/nouli-$RELEASE_TAG"
+          bot="${APP_SLUG}[bot]"
+          user_id=$(gh api "/users/${bot}" --jq .id)
+          git config user.name "${bot}"
+          git config user.email "${user_id}+${bot}@users.noreply.github.com"
+          git switch -c "$branch"
+          git add public/install.sh
+          git commit -m "Sync install script from nouli $RELEASE_TAG"
+          git push --force origin "$branch"
+          if ! gh pr view "$branch" >/dev/null 2>&1; then
+            gh pr create --base main --head "$branch" \
+              --title "Sync install script from nouli $RELEASE_TAG" \
+              --body "Copies \`scripts/install.sh\` from nouli \`$SOURCE_REF\` to \`public/install.sh\`. Merges automatically when the checks pass."
+          fi
+          gh pr merge "$branch" --auto --squash
