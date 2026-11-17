@@ -1,4 +1,4 @@
-# Publish the install script from each stable nouli release. nouli's release workflow sends a
+# Publish the install scripts from each stable nouli release. nouli's release workflow sends a
 # repository_dispatch here; this opens a pull request that merges itself once the checks pass.
 name: Sync from nouli
 on:
@@ -49,7 +49,9 @@ jobs:
           ref: ${{ env.SOURCE_REF }}
           path: .nouli
           persist-credentials: false
-          sparse-checkout: scripts/install.sh
+          sparse-checkout: |
+            scripts/install.sh
+            scripts/install.ps1
           sparse-checkout-cone-mode: false
       - name: Open a sync pull request if the installer changed
         env:
@@ -62,8 +64,12 @@ jobs:
             exit 0
           fi
           cp .nouli/scripts/install.sh public/install.sh
-          if git diff --quiet -- public/install.sh; then
-            echo "public/install.sh already matches nouli $SOURCE_REF."
+          # Older stable releases have no Windows installer; preserve its published copy.
+          if [ -f .nouli/scripts/install.ps1 ]; then
+            cp .nouli/scripts/install.ps1 public/install.ps1
+          fi
+          if git diff --quiet -- public/install.sh public/install.ps1; then
+            echo "Published installers already match nouli $SOURCE_REF."
             exit 0
           fi
           branch="sync/nouli-$RELEASE_TAG"
@@ -72,12 +78,12 @@ jobs:
           git config user.name "${bot}"
           git config user.email "${user_id}+${bot}@users.noreply.github.com"
           git switch -c "$branch"
-          git add public/install.sh
-          git commit -m "Sync install script from nouli $RELEASE_TAG"
+          git add public/install.sh public/install.ps1
+          git commit -m "Sync install scripts from nouli $RELEASE_TAG"
           git push --force origin "$branch"
           if ! gh pr view "$branch" >/dev/null 2>&1; then
             gh pr create --base main --head "$branch" \
-              --title "Sync install script from nouli $RELEASE_TAG" \
-              --body "Copies \`scripts/install.sh\` from nouli \`$SOURCE_REF\` to \`public/install.sh\`. Merges automatically when the checks pass."
+              --title "Sync install scripts from nouli $RELEASE_TAG" \
+              --body "Copies the Unix and Windows installers available in nouli \`$SOURCE_REF\` to \`public/\`. Merges automatically when the checks pass."
           fi
           gh pr merge "$branch" --auto --squash

@@ -23,6 +23,7 @@
 /fonts/martian-mono-OFL.txt
 /fonts/martian-mono-latin-variable.woff2
 /guide/
+/install.ps1
 /install.sh
 /llms.txt
 /media/tui-controls.webm
