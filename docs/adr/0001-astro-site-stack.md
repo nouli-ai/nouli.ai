@@ -5,6 +5,9 @@ date: 2026-11-09
 
 # Build the website with Astro and a small, verified toolchain
 
+[ADR 0003](0003-deploy-validated-site-artifacts.md) replaces the single CI command
+and independent Pages build with the same checks over one deployable artifact.
+
 Originally ADR 0026 in [nouli-ai/nouli](https://github.com/nouli-ai/nouli), when the website lived in that repository's `site/` directory.
 
 ## Context
