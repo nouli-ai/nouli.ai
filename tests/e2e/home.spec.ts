@@ -72,9 +72,25 @@ test("the home page offers commands and the recorded screen without JavaScript",
     await expect(page.locator(".install code").first()).toHaveText(
       "brew install nouli-ai/tap/nouli",
     );
+    await expect(page.locator(".install code").last()).toHaveText(
+      "irm https://nouli.ai/install.ps1 | iex",
+    );
   } finally {
     await context.close();
   }
+});
+
+test("the Windows install command copies with the keyboard", async ({ page, context }) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/#install");
+  const copy = page.getByRole("button", { name: "Copy the PowerShell install command" });
+  await copy.focus();
+  await page.keyboard.press("Enter");
+  await expect(copy.locator("..").getByRole("status")).toHaveText("Copied to the clipboard");
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+    "irm https://nouli.ai/install.ps1 | iex",
+  );
 });
 
 test("operation cards switch the build network's mode", async ({ page }) => {
@@ -108,4 +124,20 @@ test("clicking a step opens what it saw, and Escape returns focus", async ({ pag
   await page.keyboard.press("Escape");
   await expect(panel).toBeHidden();
   await expect(step).toBeFocused();
+});
+
+test("Windows guide paths wrap inside a narrow viewport", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 900 });
+  await page.goto("/guide/#install");
+  const path = page.locator("p code").filter({
+    hasText: "%LOCALAPPDATA%\\Programs\\Nouli\\bin\\nouli.exe",
+  });
+  await expect(path).toHaveCount(1);
+  const rectangles = await path.evaluate((element) =>
+    Array.from(element.getClientRects(), (rect) => ({ left: rect.left, right: rect.right })),
+  );
+  for (const rect of rectangles) {
+    expect(rect.left).toBeGreaterThanOrEqual(0);
+    expect(rect.right).toBeLessThanOrEqual(390);
+  }
 });
