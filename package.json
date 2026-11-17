@@ -13,8 +13,9 @@
     "test:unit": "vitest run --project unit",
     "test:dist": "html-validate dist && vitest run --project dist",
     "test:e2e": "playwright test --project e2e",
-    "check": "npm run format:check && npm run lint && npm run lint:shell && npm run typecheck && npm run test:unit && npm run build && npm run test:dist && npm run test:e2e",
-    "lint:shell": "shellcheck public/install.sh tools/record-hero.sh"
+    "check": "npm run check:static && npm run test:e2e",
+    "lint:shell": "shellcheck public/install.sh tools/record-hero.sh",
+    "check:static": "npm run format:check && npm run lint && npm run lint:shell && npm run typecheck && npm run test:unit && npm run build && npm run test:dist"
   },
   "dependencies": {
     "astro": "^7.4.8"

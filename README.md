@@ -17,9 +17,9 @@ npm run check                     # format, lint, types, unit tests, build, buil
 
 ## Deploy and release sync
 
-- `.github/workflows/ci.yml` runs `npm run check` and Actionlint on every pull request and on `main`. Branch protection requires its "Required checks" job, which passes only when both do.
-- `.github/workflows/pages.yml` builds and publishes the site to GitHub Pages on every push to `main`.
-- `.github/workflows/sync-nouli.yml` keeps `public/install.sh` identical to `scripts/install.sh` in [nouli-ai/nouli](https://github.com/nouli-ai/nouli). When a stable nouli release is published, nouli sends a `nouli-release-published` dispatch. The workflow copies the script from that tag and, if it changed, opens a pull request that merges itself once the checks pass. Run it by hand with a tag, plus an optional `ref`, to publish an urgent installer fix.
+- `.github/workflows/ci.yml` runs static checks and builds `dist/` once, then tests that artifact in a Playwright image matching the locked browser version. Branch protection requires workflow, static, and browser checks to succeed.
+- After those checks pass on `main`, the same workflow deploys that tested artifact to GitHub Pages; there is no independent rebuild. `npm run check` remains the complete local validation command.
+- `.github/workflows/sync-nouli.yml` keeps `public/install.sh` and `public/install.ps1` identical to the canonical installers in [nouli-ai/nouli](https://github.com/nouli-ai/nouli). When a stable nouli release is published, nouli sends a `nouli-release-published` dispatch. The workflow copies both available scripts from that tag and, if it changed, opens a pull request that merges itself once the checks pass. Run it by hand with a tag, plus an optional `ref`, to publish an urgent installer fix.
 
 The sync authenticates as the `nouli-tap-updater` GitHub App, using the `TAP_APP_CLIENT_ID` variable and the `TAP_APP_PRIVATE_KEY` secret.
 
