@@ -1,34 +1,49 @@
 ---
-import { install, latestRelease } from "../../lib/site";
-const rows = [
-  { os: "macOS", code: install.homebrew, label: "Copy the Homebrew install command" },
-  { os: "Linux", code: install.script, label: "Copy the download installer command" },
-  { os: "Windows", code: install.windows, label: "Copy the PowerShell install command" },
-];
+import { latestRelease } from "../../lib/site";
+import { installationPlatforms } from "../../lib/installation";
 ---
 
-<div class="install" id="install">
-  {rows.map(({ os, code, label }) => (
-    <copy-text class="row">
-      <span class="os">{os}</span>
-      <code data-copy-source>{code}</code>
-      <button type="button" class="copy" aria-label={label} data-copy-button>
-        Copy
-      </button>
-      <span class="status" role="status" data-copy-status></span>
-    </copy-text>
-  ))}
+<install-tabs class="install" id="install">
+  <fieldset class="platforms">
+    <legend>Operating system</legend>
+    {installationPlatforms.map(({ id, os }) => (
+      <>
+        <input
+          type="radio"
+          id={`install-os-${id}`}
+          name="install-os"
+          value={id}
+          checked={id === "macos"}
+        />
+        <label for={`install-os-${id}`}>{os}</label>
+      </>
+    ))}
+    <div class="commands">
+      {installationPlatforms.map(({ id, os, code, label, detail }) => (
+        <section class="panel" data-platform={id} aria-label={`${os} installation`}>
+          <copy-text class="row">
+            <code data-copy-source>{code}</code>
+            <button type="button" class="copy" aria-label={label} data-copy-button>
+              Copy
+            </button>
+            <span class="status" role="status" data-copy-status></span>
+          </copy-text>
+          <p class="detail">{detail}</p>
+        </section>
+      ))}
+    </div>
+  </fieldset>
   <p class="meta">
     <latest-release>
       <a data-latest-release href={latestRelease}>
         latest release
       </a>
     </latest-release>{" "}
-    · Apple silicon macOS · Linux ARM64 and x86_64 · Windows 11 ARM64 and x64 ·{" "}
-    <a href="/guide/#install">other ways to install</a>
+    · <a href="/guide/#install">other ways to install</a>
   </p>
-</div>
+</install-tabs>
 <script>
+  import "../../client/install-tabs";
   import "../../client/copy-text";
   import "../../client/latest-release";
 </script>
@@ -40,24 +55,68 @@ const rows = [
     max-width: 600px;
     scroll-margin-top: 24px;
   }
+  .platforms {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    min-width: 0;
+    margin: 0;
+    padding: 5px;
+    border: 1px solid var(--sky-line);
+    border-radius: 16px;
+    background: var(--sky-tint);
+    backdrop-filter: blur(10px);
+  }
+  legend,
+  input,
+  .status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  label {
+    display: grid;
+    place-items: center;
+    min-height: 44px;
+    padding: 0 12px;
+    border-radius: 10px;
+    color: var(--on-sky-soft);
+    font: 500 12px var(--mono);
+    cursor: pointer;
+  }
+  input:checked + label {
+    color: var(--on-sky);
+    background: var(--sky-tint);
+    box-shadow: inset 0 0 0 1px var(--sky-line);
+  }
+  input:focus-visible + label,
+  .copy:focus-visible {
+    outline: 2px solid var(--on-sky);
+    outline-offset: 2px;
+  }
+  .commands {
+    grid-column: 1 / -1;
+    min-height: 95px;
+    padding: 12px 8px 5px;
+  }
+  .panel {
+    display: none;
+  }
+  input[value="macos"]:checked ~ .commands [data-platform="macos"],
+  input[value="linux"]:checked ~ .commands [data-platform="linux"],
+  input[value="windows"]:checked ~ .commands [data-platform="windows"] {
+    display: block;
+  }
   .row {
     position: relative;
     display: grid;
-    grid-template-columns: 54px minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
-    gap: 8px;
-    padding: 7px 7px 7px 14px;
-    border-radius: 14px;
-    background: var(--sky-tint);
-    border: 1px solid var(--sky-line);
-    backdrop-filter: blur(10px);
-  }
-  .os {
-    font: 500 11px var(--mono);
-    font-stretch: 87%;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--on-sky-soft);
+    gap: 12px;
   }
   code {
     font: 500 12.5px var(--mono);
@@ -66,53 +125,39 @@ const rows = [
   }
   .copy {
     min-width: 64px;
-    min-height: 32px;
+    min-height: 44px;
     padding: 0 12px;
     border-radius: 9px;
     border: 1px solid var(--sky-line);
     background: none;
     color: inherit;
     font: 500 12px var(--mono);
-    font-stretch: 87%;
     cursor: pointer;
   }
-  .copy:focus-visible {
-    outline: 2px solid var(--on-sky);
-    outline-offset: 2px;
-  }
-  .status {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-  }
-  latest-release {
-    display: contents;
-  }
+  .detail,
   .meta {
-    margin-top: 2px;
     font-size: 12.5px;
     color: var(--on-sky-soft);
+  }
+  .detail {
+    margin-top: 8px;
+  }
+  .meta {
+    margin: 2px 0 0;
   }
   .meta a {
     color: var(--on-sky);
     text-underline-offset: 3px;
   }
-  @media (max-width: 600px), (pointer: coarse) {
-    .copy {
-      min-height: 44px;
-    }
+  latest-release {
+    display: contents;
   }
   @media (max-width: 600px) {
-    .row {
-      grid-template-columns: minmax(0, 1fr) auto;
-    }
-    .os {
-      grid-column: 1 / -1;
-    }
     code {
       font-size: 12px;
+    }
+    .commands {
+      min-height: 113px;
     }
   }
 </style>

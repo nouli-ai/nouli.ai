@@ -84,6 +84,7 @@ test("the Windows install command copies with the keyboard", async ({ page, cont
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/#install");
+  await page.locator('label[for="install-os-windows"]').click();
   const copy = page.getByRole("button", { name: "Copy the PowerShell install command" });
   await copy.focus();
   await page.keyboard.press("Enter");
@@ -139,5 +140,53 @@ test("Windows guide paths wrap inside a narrow viewport", async ({ page }) => {
   for (const rect of rectangles) {
     expect(rect.left).toBeGreaterThanOrEqual(0);
     expect(rect.right).toBeLessThanOrEqual(390);
+  }
+});
+
+for (const [platform, expected] of [
+  ["MacIntel", "macos"],
+  ["Linux x86_64", "linux"],
+  ["Win32", "windows"],
+] as const) {
+  test(`installation defaults to ${platform}`, async ({ page }) => {
+    await page.addInitScript((value) => {
+      Object.defineProperty(navigator, "platform", { value });
+    }, platform);
+    await page.goto("/");
+    await expect(page.locator(`#install-os-${expected}`)).toBeChecked();
+    await expect(page.locator(".install .panel:visible")).toHaveCount(1);
+  });
+}
+
+test("installation choices support keyboard, sharing, and history", async ({ page }) => {
+  await page.goto("/?os=macos#install");
+  await page.locator("#install-os-macos").focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(page.locator("#install-os-linux")).toBeChecked();
+  await expect(page).toHaveURL(/os=linux/u);
+  await page.locator('label[for="install-os-windows"]').click();
+  await expect(page.locator("#install-os-windows")).toBeChecked();
+  await expect(page.locator('.panel[data-platform="windows"]')).toBeVisible();
+  await page.goBack();
+  await expect(page.locator("#install-os-linux")).toBeChecked();
+  await page.goForward();
+  await expect(page.locator("#install-os-windows")).toBeChecked();
+  await page.reload();
+  await expect(page.locator("#install-os-windows")).toBeChecked();
+});
+
+test("native installation choices work without JavaScript", async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  try {
+    const page = await context.newPage();
+    await page.goto("/#install");
+    for (const os of ["macos", "linux", "windows"]) {
+      // eslint-disable-next-line no-await-in-loop -- Native choices on one page must be exercised sequentially.
+      await page.locator(`label[for="install-os-${os}"]`).click();
+      // eslint-disable-next-line no-await-in-loop -- Observe each choice before changing it.
+      await expect(page.locator(`.panel[data-platform="${os}"]`)).toBeVisible();
+    }
+  } finally {
+    await context.close();
   }
 });

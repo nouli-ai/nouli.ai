@@ -10,8 +10,8 @@ import { builtPages, distDir, fileFor } from "../support/site";
 const budgets: [pattern: RegExp, bytes: number][] = [
   // The live networks (about 6.6 kB), the terminal replay (6.4 kB), the sky and its pointer comb
   // (4.8 kB), the tabs, inspector, operation cards and reveals (3.3 kB), the floating navigation,
-  // copy controls and the release lookup; recordings load on demand.
-  [/^\/$/u, 26_000],
+  // copy controls, OS selection (under 1 kB), and the release lookup; recordings load on demand.
+  [/^\/$/u, 27_000],
   // Every other page has the sky header and floating navigation (about 6 kB), plus:
   // the capture view buttons in the guide,
   [/^\/guide\/$/u, 7500],
