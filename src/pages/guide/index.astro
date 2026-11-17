@@ -2,6 +2,7 @@
 import Capture from "../../components/terminal/Capture.astro";
 import HivePage from "../../components/hive/HivePage.astro";
 import PageHead from "../../components/hive/PageHead.astro";
+import { install, latestRelease } from "../../lib/site";
 ---
 
 <HivePage
@@ -62,11 +63,11 @@ import PageHead from "../../components/hive/PageHead.astro";
       <p>
         On <strong>macOS (Apple silicon)</strong>, use Homebrew:
       </p>
-      <pre tabindex="0"><code>brew install nouli-ai/tap/nouli</code></pre>
+      <pre tabindex="0"><code>{install.homebrew}</code></pre>
       <p>
         On <strong>Linux</strong>, use the download installer:
       </p>
-      <pre tabindex="0"><code>curl -fsSL https://nouli.ai/install.sh | sh</code></pre>
+      <pre tabindex="0"><code>{install.script}</code></pre>
       <p>
         The script installs the latest published binary into <code>~/.local/bin</code> after
         verifying its checksum. It also works on Apple silicon macOS. Linux needs glibc 2.38 or
@@ -79,14 +80,29 @@ nouli --version</code></pre>
         If you previously installed with Cargo, run <code>cargo uninstall nouli-cli</code> before
         switching so the old executable does not take precedence.
       </p>
+      <p>
+        On <strong>Windows 11 (ARM64 or x64)</strong>, run the installer in PowerShell:
+      </p>
+      <pre tabindex="0"><code>{install.windows}</code></pre>
+      <p>
+        It verifies the release checksum and installs <code>nouli.exe</code> in{" "}
+        <code>%LOCALAPPDATA%\Programs\Nouli\bin</code> without administrator rights. Add that
+        directory to your user PATH, or launch it directly:
+      </p>
+      <pre tabindex="0"><code>&amp; "$env:LOCALAPPDATA\Programs\Nouli\bin\nouli.exe"</code></pre>
+      <p>
+        Windows archives are available starting with 0.6.0. You can also download a ZIP and its
+        checksum from the <a href={latestRelease}>latest release</a>.
+      </p>
       <p>To update a Homebrew installation:</p>
       <pre tabindex="0"><code>brew update
 brew upgrade nouli-ai/tap/nouli</code></pre>
       <p>
         For a script installation, run the download installer again. Uninstall with{" "}
         <code>brew uninstall nouli-ai/tap/nouli</code> for Homebrew, or remove{" "}
-        <code>~/.local/bin/nouli</code> for the script. Your configuration and saved sessions are
-        preserved.
+        <code>~/.local/bin/nouli</code> for the Unix script or{" "}
+        <code>%LOCALAPPDATA%\Programs\Nouli\bin\nouli.exe</code> for Windows. Close Nouli before
+        updating its Windows executable. Your configuration and saved sessions are preserved.
       </p>
       <p>
         See the{" "}
@@ -108,7 +124,7 @@ brew upgrade nouli-ai/tap/nouli</code></pre>
       </p>
       <p>
         Run <code>nouli connect</code>, choose a service, authenticate, and select a model.
-        Shortcuts are available for OpenAI, TypeSafe, OpenRouter, Cloudflare Workers AI, Ollama and
+        Shortcuts are available for TypeSafe, OpenRouter, Cloudflare Workers AI, OpenAI, Ollama and
         llama.cpp. Choose <code>custom</code> for another compatible server. You can type any model
         ID your server supports.
       </p>
@@ -119,7 +135,8 @@ nouli connect ollama --model clef --default --non-interactive</code></pre>
       <p>
         Paste an API key into the masked prompt, name an environment variable, or use a credential
         program. Keys are stored privately beside your config. Setup makes no model calls. A bare{" "}
-        <code>nouli</code> also opens setup when no connection exists.
+        <code>nouli</code> opens the interactive view immediately. When no model is configured, it
+        shows guidance to use <code>/connect</code>; use <code>/model</code> to choose a model.
       </p>
       <p>
         Shortcuts write ordinary settings. You can edit <code>~/.nouli/config.toml</code> yourself
@@ -560,7 +577,13 @@ nouli workflow resume RUN_ID</code></pre>
               <code>auth_store_insecure</code>
             </td>
             <td>
-              Others can read <code>~/.nouli/auth.toml</code>. Run <code>chmod 600</code> on it.
+              The credential file or its access rules are unsafe. On Unix, restrict the file with{" "}
+              <code>chmod 600</code>. On Windows, review the named path with <code>icacls</code> and
+              follow the{" "}
+              <a href="https://github.com/nouli-ai/nouli/blob/main/docs/windows.md#paths-and-private-persistence">
+                Windows repair guidance
+              </a>
+              .
             </td>
           </tr>
           <tr>
@@ -633,6 +656,9 @@ nouli workflow resume RUN_ID</code></pre>
   }
   .guide > * {
     min-width: 0;
+  }
+  .guide p code {
+    overflow-wrap: anywhere;
   }
   .toc {
     position: sticky;

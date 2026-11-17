@@ -3,6 +3,7 @@ import { install, latestRelease } from "../../lib/site";
 const rows = [
   { os: "macOS", code: install.homebrew, label: "Copy the Homebrew install command" },
   { os: "Linux", code: install.script, label: "Copy the download installer command" },
+  { os: "Windows", code: install.windows, label: "Copy the PowerShell install command" },
 ];
 ---
 
@@ -23,7 +24,7 @@ const rows = [
         latest release
       </a>
     </latest-release>{" "}
-    · Apple silicon macOS · Linux ARM64 and x86_64 ·{" "}
+    · Apple silicon macOS · Linux ARM64 and x86_64 · Windows 11 ARM64 and x64 ·{" "}
     <a href="/guide/#install">other ways to install</a>
   </p>
 </div>
@@ -97,6 +98,11 @@ const rows = [
   .meta a {
     color: var(--on-sky);
     text-underline-offset: 3px;
+  }
+  @media (max-width: 600px), (pointer: coarse) {
+    .copy {
+      min-height: 44px;
+    }
   }
   @media (max-width: 600px) {
     .row {

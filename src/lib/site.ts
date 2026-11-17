@@ -8,6 +8,7 @@ export const latestRelease = `${repository}/releases/latest`;
 export const install = {
   homebrew: "brew install nouli-ai/tap/nouli",
   script: `curl -fsSL ${siteOrigin}/install.sh | sh`,
+  windows: `irm ${siteOrigin}/install.ps1 | iex`,
 } as const;
 
 export interface Link {
