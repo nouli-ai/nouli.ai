@@ -57,11 +57,13 @@ cli-replay:not([style]) {
   overflow: hidden;
   visibility: hidden;
 }
+/* A fixed measuring size prevents terminal sizing from feeding back into its own probe. */
 .cli-probe {
   position: absolute;
   white-space: pre;
   font: inherit;
   font-family: var(--term);
+  font-size: 100px;
 }
 /* Pause and restart, under the screen; shown once the replay script runs. */
 .cli-replay-controls {

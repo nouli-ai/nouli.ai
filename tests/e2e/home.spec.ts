@@ -29,10 +29,6 @@ test("the replay pauses, restarts, and settles when reduced motion changes", asy
   await test.step("Load and reveal the recording", async () => {
     await page.clock.install();
     await page.goto("/");
-    // Exercise the real replay clock without advancing decorative software-rendered skies.
-    await page.locator("sky-field").evaluateAll((elements) => {
-      for (const element of elements) element.remove();
-    });
     await expect(terminal).toHaveAttribute("data-columns", "160");
     await screen.scrollIntoViewIfNeeded();
   });

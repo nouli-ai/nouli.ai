@@ -267,7 +267,7 @@ export class CliReplay extends HTMLElement {
     const columns = this.#recording?.columns;
     if (columns === undefined) return;
     const probe = required(this, ".cli-probe", HTMLSpanElement);
-    const size = Number(getComputedStyle(this).fontSize.replace("px", ""));
+    const size = Number(getComputedStyle(probe).fontSize.replace("px", ""));
     const unit = probe.getBoundingClientRect().width / 100 / size;
     const fitted = Math.floor((this.clientWidth / (columns * unit)) * 100) / 100;
     // Layout can briefly report a zero width or inconsistent probe while a viewport resizes.
