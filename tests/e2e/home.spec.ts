@@ -26,6 +26,10 @@ test("a failed release lookup retains the working generic link", async ({ page }
 test("the replay pauses, restarts, and settles when reduced motion changes", async ({ page }) => {
   await page.clock.install();
   await page.goto("/");
+  // Exercise the real replay clock without advancing decorative software-rendered skies.
+  await page.locator("sky-field").evaluateAll((elements) => {
+    for (const element of elements) element.remove();
+  });
   const terminal = page.locator("cli-replay");
   const screen = terminal.locator("pre");
   await expect(terminal).toHaveAttribute("data-columns", "160");
