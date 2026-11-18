@@ -24,29 +24,39 @@ test("a failed release lookup retains the working generic link", async ({ page }
 });
 
 test("the replay pauses, restarts, and settles when reduced motion changes", async ({ page }) => {
-  await page.clock.install();
-  await page.goto("/");
-  // Exercise the real replay clock without advancing decorative software-rendered skies.
-  await page.locator("sky-field").evaluateAll((elements) => {
-    for (const element of elements) element.remove();
-  });
   const terminal = page.locator("cli-replay");
   const screen = terminal.locator("pre");
-  await expect(terminal).toHaveAttribute("data-columns", "160");
-  await screen.scrollIntoViewIfNeeded();
-  await page.clock.runFor(3000);
-  await expect(terminal).toHaveAttribute("data-playing", "true");
-  await terminal.getByRole("button", { name: "Pause" }).click();
-  await expect(terminal).toHaveAttribute("data-playing", "false");
-  const paused = await screen.textContent();
-  await page.clock.runFor(3000);
-  expect(await screen.textContent()).toBe(paused);
-  await terminal.getByRole("button", { name: "Restart" }).click();
-  await page.clock.runFor(1000);
-  await expect(terminal).toHaveAttribute("data-playing", "true");
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await expect(terminal).toHaveAttribute("data-playing", "false");
-  await expect(screen).toContainText("How ready is the workshop?");
+  await test.step("Load and reveal the recording", async () => {
+    await page.clock.install();
+    await page.goto("/");
+    // Exercise the real replay clock without advancing decorative software-rendered skies.
+    await page.locator("sky-field").evaluateAll((elements) => {
+      for (const element of elements) element.remove();
+    });
+    await expect(terminal).toHaveAttribute("data-columns", "160");
+    await screen.scrollIntoViewIfNeeded();
+  });
+  await test.step("Advance playback", async () => {
+    await page.clock.runFor(3000);
+    await expect(terminal).toHaveAttribute("data-playing", "true");
+  });
+  await test.step("Pause and preserve the screen", async () => {
+    await terminal.getByRole("button", { name: "Pause" }).click();
+    await expect(terminal).toHaveAttribute("data-playing", "false");
+    const paused = await screen.textContent();
+    await page.clock.runFor(3000);
+    expect(await screen.textContent()).toBe(paused);
+  });
+  await test.step("Restart playback", async () => {
+    await terminal.getByRole("button", { name: "Restart" }).click();
+    await page.clock.runFor(1000);
+    await expect(terminal).toHaveAttribute("data-playing", "true");
+  });
+  await test.step("Honor live reduced motion", async () => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await expect(terminal).toHaveAttribute("data-playing", "false");
+    await expect(screen).toContainText("How ready is the workshop?");
+  });
 });
 
 test("small screens load only the narrow recording", async ({ page }) => {
