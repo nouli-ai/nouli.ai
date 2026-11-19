@@ -34,10 +34,10 @@ const codeSteps = data.steps.flatMap((step) =>
 const most = Math.max(...data.routes.counts.map(([, n]) => n));
 const number = (n: number): string => (Number.isInteger(n) ? String(n) : n.toFixed(1));
 const stats = [
-  [String(data.sample.count), data.sample.unit, "run through the network"],
-  [number(data.stats.decisions), "model decisions", "per case, on average"],
-  [`${data.stats.medianSeconds.toFixed(2)} s`, "per case", "median, end to end"],
-  [`$${data.stats.costPer1000.toFixed(2)}*`, "per 1,000 cases", `on ${data.model}`],
+  [String(data.sample.count), data.sample.unit],
+  [number(data.stats.decisions), "model decisions per case"],
+  [`${data.stats.medianSeconds.toFixed(2)} s`, "per case"],
+  [`$${data.stats.costPer1000.toFixed(2)}*`, "per 1,000 cases"],
 ] as const;
 ---
 
@@ -57,11 +57,10 @@ const stats = [
       <p>{data.context}</p>
     </div>
     <ul class="stats">
-      {stats.map(([value, unit, note]) => (
+      {stats.map(([value, unit]) => (
         <li>
           <b>{value}</b>
           <span>{unit}</span>
-          <small>{note}</small>
         </li>
       ))}
     </ul>
@@ -72,7 +71,6 @@ const stats = [
     <SkyPanel class="panel">
       <div class="bar">
         <a href={data.case.url}>{data.case.label}</a>
-        <span>{entry.id}</span>
       </div>
       <DecisionNet
         network={networkOf(entry)}
@@ -201,7 +199,6 @@ const stats = [
   .stats span {
     font-weight: 500;
   }
-  .stats small,
   .label {
     font: 400 11px var(--mono);
     font-stretch: 87%;

@@ -1,0 +1,81 @@
+---
+import DecisionNet from "./DecisionNet.astro";
+import SkyPanel from "./SkyPanel.astro";
+import { refundReview } from "../../lib/home/illustrative";
+import { contact } from "../../lib/site";
+---
+
+<SkyPanel class="close-panel" comb>
+  <DecisionNet
+    network={refundReview}
+    label="Atmosphere"
+    height={520}
+    pad={0.05}
+    decorative
+    class="close-net"
+  />
+  <h2>Big inference bill?</h2>
+  <p class="ctas">
+    <a class="btn amber" href={contact.href}>
+      Run Nouli on your traffic
+    </a>
+  </p>
+</SkyPanel>
+
+<style>
+  :global(.close-panel) {
+    margin: 130px 12px 0;
+    padding: 170px 24px;
+    border-radius: 28px;
+    text-align: center;
+  }
+  /* The network is atmosphere: it sits behind the copy and never takes a click. */
+  :global(.close-net) {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  @media (max-width: 700px) {
+    :global(.close-net) {
+      display: none;
+    }
+  }
+  h2,
+  .ctas {
+    position: relative;
+    z-index: 1;
+  }
+  h2 {
+    max-width: 12em;
+    margin: 0 auto;
+    font-weight: 400;
+    font-size: clamp(34px, 4.2vw, 58px);
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+  }
+  .ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 30px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    height: 44px;
+    padding: 0 22px;
+    border-radius: 999px;
+    font-weight: 500;
+    font-size: 15px;
+    text-decoration: none;
+  }
+  .amber {
+    background: var(--amber);
+    color: var(--on-amber);
+  }
+  .btn:focus-visible {
+    outline: 2px solid var(--on-sky);
+    outline-offset: 4px;
+  }
+</style>

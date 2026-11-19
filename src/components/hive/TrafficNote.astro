@@ -1,0 +1,29 @@
+---
+import { count, wildchat } from "../../lib/traffic";
+
+interface Props {
+  id: string;
+  class?: string;
+}
+const { id, class: className } = Astro.props;
+const { source, frontier } = wildchat;
+---
+
+<p class:list={["note", className]} id={id}>
+  * <a href={source.url}>{source.name}</a> ({source.license}) replay, {source.replayed}:{" "}
+  {count(wildchat.totalCalls)} ChatGPT calls from {source.jobs} routine jobs at {frontier.model}{" "}
+  list prices. Reasoning tokens aren't counted, so frontier costs are understated.
+</p>
+
+<style>
+  .note {
+    max-width: 62em;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--hive-soft);
+    scroll-margin-top: 96px;
+  }
+  a {
+    color: inherit;
+  }
+</style>

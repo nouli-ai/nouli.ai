@@ -1,28 +1,5 @@
 import { expect, test } from "@playwright/test";
 
-test.beforeEach(async ({ page }) => {
-  await page.route("https://api.github.com/**", (route) =>
-    route.fulfill({ json: { tag_name: "v9.8.7" } }),
-  );
-});
-
-test("the latest release is resolved at view time", async ({ page }) => {
-  await page.goto("/");
-  await expect(page.locator("[data-latest-release]")).toHaveText("v9.8.7");
-});
-
-test("a failed release lookup retains the working generic link", async ({ page }) => {
-  await page.route("https://api.github.com/**", (route) =>
-    route.fulfill({ status: 503, body: "unavailable" }),
-  );
-  await page.goto("/");
-  await expect(page.locator("[data-latest-release]")).toHaveText("latest release");
-  await expect(page.locator("[data-latest-release]")).toHaveAttribute(
-    "href",
-    /\/releases\/latest$/u,
-  );
-});
-
 test("the home page reads fully without JavaScript", async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
@@ -41,7 +18,6 @@ test("the home page reads fully without JavaScript", async ({ browser }) => {
     ])
       // eslint-disable-next-line no-await-in-loop -- Each target is checked on the same page.
       await expect(map).toContainText(target);
-    await expect(page.locator("#how video")).toHaveAttribute("controls", "");
     await expect(page.locator(".install code").first()).toHaveText(
       "brew install nouli-ai/tap/nouli",
     );
@@ -56,58 +32,10 @@ test("the home page reads fully without JavaScript", async ({ browser }) => {
 test("every contact button opens an email to the team", async ({ page }) => {
   await page.goto("/");
   const links = page.getByRole("link", { name: /Run Nouli on your traffic|Talk to us/u });
-  await expect(links).toHaveCount(3);
+  await expect(links).toHaveCount(2);
   for (const link of await links.all())
     // eslint-disable-next-line no-await-in-loop -- Each link is checked on the same page.
     await expect(link).toHaveAttribute("href", /^mailto:nouli@aravindn\.com\?subject=/u);
-});
-
-test("the prototype video plays on screen and respects a visitor's pause", async ({ page }) => {
-  await page.goto("/");
-  const video = page.locator("#how video");
-  await video.scrollIntoViewIfNeeded();
-  await expect.poll(() => video.evaluate((el: HTMLVideoElement) => el.paused)).toBe(false);
-  await video.evaluate((el: HTMLVideoElement) => {
-    el.pause();
-  });
-  await page.evaluate(() => {
-    scrollTo(0, 0);
-  });
-  await video.scrollIntoViewIfNeeded();
-  await page.waitForTimeout(300);
-  expect(await video.evaluate((el: HTMLVideoElement) => el.paused)).toBe(true);
-});
-
-test("the prototype video pauses offscreen and resumes on return", async ({ page }) => {
-  await page.goto("/");
-  const video = page.locator("#how video");
-  const paused = (): Promise<boolean> => video.evaluate((el: HTMLVideoElement) => el.paused);
-  await video.scrollIntoViewIfNeeded();
-  await expect.poll(paused).toBe(false);
-  await page.evaluate(() => {
-    scrollTo(0, 0);
-  });
-  await expect.poll(paused).toBe(true);
-  await video.scrollIntoViewIfNeeded();
-  await expect.poll(paused).toBe(false);
-});
-
-test("phones wait for a tap before playing the prototype video", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/");
-  const video = page.locator("#how video");
-  await video.scrollIntoViewIfNeeded();
-  await page.waitForTimeout(300);
-  expect(await video.evaluate((el: HTMLVideoElement) => el.paused)).toBe(true);
-});
-
-test("the prototype video stays still under reduced motion", async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/");
-  const video = page.locator("#how video");
-  await video.scrollIntoViewIfNeeded();
-  await page.waitForTimeout(300);
-  expect(await video.evaluate((el: HTMLVideoElement) => el.paused)).toBe(true);
 });
 
 test("the Windows install command copies with the keyboard", async ({ page, context }) => {

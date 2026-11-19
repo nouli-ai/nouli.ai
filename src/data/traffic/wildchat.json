@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "source": {
+    "name": "WildChat-4.8M",
+    "publisher": "allenai",
+    "license": "ODC-BY",
+    "url": "https://huggingface.co/datasets/allenai/WildChat-4.8M",
+    "replayed": "November 17–18, 2026",
+    "jobs": 10
+  },
+  "frontier": {
+    "model": "gpt-6.2-astra",
+    "inputPerMillion": 8,
+    "outputPerMillion": 40
+  },
+  "decisionModel": {
+    "model": "TypeSafe Jev 1.14",
+    "inputPerMillion": 0.042
+  },
+  "pricesChecked": "November 17, 2026",
+  "totalCalls": 133809.9999999997,
+  "frontierOnlyCost": 422.5008274588879,
+  "routedCost": 80.5110249812261,
+  "routes": [
+    {
+      "key": "cache",
+      "name": "Cache",
+      "detail": "Exact repeat of an earlier prompt",
+      "calls": 70730.0,
+      "cost": 0.0
+    },
+    {
+      "key": "code",
+      "name": "Code",
+      "detail": "A rule reads it from the text",
+      "calls": 6711.106659836123,
+      "cost": 0.0
+    },
+    {
+      "key": "decision",
+      "name": "Decision model",
+      "detail": "Jev answers a typed question",
+      "calls": 21322.305134322098,
+      "cost": 0.7934292146893104
+    },
+    {
+      "key": "frontier",
+      "name": "Frontier model",
+      "detail": "Unsure, or kept on the LLM",
+      "calls": 35046.588205841486,
+      "cost": 79.71759576653679
+    }
+  ],
+  "savings": {
+    "cacheOnly": 0.586,
+    "networkOnly": 0.677,
+    "both": 0.809
+  },
+  "agreement": {
+    "network": 0.925,
+    "originalWithItself": 0.917
+  },
+  "frontierFallback": {
+    "unsure": 11456,
+    "jobsKeptOnLlm": 23588,
+    "keptJobs": "app review intent and episode numbers",
+    "writesReply": 3
+  }
+}

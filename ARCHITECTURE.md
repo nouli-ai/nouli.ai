@@ -4,9 +4,10 @@ The static Astro site follows [ADR 0001](docs/adr/0001-astro-site-stack.md), [AG
 
 ## Routes and data
 
-- `/` composes the hive components in `src/components/hive/`. Its hero routing map (`RouteMap`, positioned by `lib/home/route-map.ts`) and the closing panel's network (`lib/home/illustrative.ts`) are illustrative. The prototype video and its captions live in `public/media/`.
+- `/` composes the hive components in `src/components/hive/`. Its hero routing map (`RouteMap`, positioned by `lib/home/route-map.ts`) and the closing panel's network (`lib/home/illustrative.ts`) are illustrative.
 - `/examples/` and `/examples/<slug>/` render the `examples` content collection from `src/content/examples/*.json`. Its schema validates step IDs, ancestry, probability bounds, and rounded distribution totals. Each page includes the source, license, sample, model, measured stats, routing counts and notes.
 - The eight retired walkthrough URLs remain Astro redirects. The URL inventory verifies that each target exists. HTML validation permits either doctype case because Astro generates lowercase doctypes in redirects; the remaining recommended rules still apply.
+- The home page's traffic section renders `src/data/traffic/wildchat.json`, committed output of the WildChat replay of November 17–18, 2026 (`traffic-visual-20261119/build.py`, run outside this repository); no tool here regenerates it. Its schema checks that the routes add up to the totals and the saving.
 - `/guide/` renders its recorded meeting capture. `/models/` and the model pages render the `models` collection.
 - Files under `public/` retain their published URLs, including `/install.sh` and `/llms.txt`. `integrations/sitemap.ts` writes `/sitemap.xml`.
 
@@ -24,9 +25,10 @@ Vanilla custom elements enhance this HTML:
 - `sky-field` draws a viewport-aligned shader sky and pointer honeycomb. Colors come from tokens. Measurements refresh on scroll and resize instead of in every frame.
 - `decision-net` reads the placed HTML cards, draws edges and pulses, and animates the visible probabilities. Static numbers remain in the accessibility tree.
 - The routing map lights its edges once with CSS in under five seconds; reduced motion shows them lit.
-- `play-in-view` plays the muted prototype video while it is on screen, keeps its native controls, and stays paused under reduced motion or after the visitor pauses it. Scripts follow the live reduced-motion preference, stop frames offscreen or in hidden tabs, and release listeners and observers on disconnect.
+- Scripts follow the live reduced-motion preference, stop frames offscreen or in hidden tabs, and release listeners and observers on disconnect.
 - `reveal-sections` batches section measurements before writes; everything starts visible, and reduced motion reveals remain readable.
-- Existing copy, release lookup, model filtering and capture-view elements remain self-contained.
+- `traffic-compare` plays the WildChat traffic comparison once when it first scrolls into view (under five seconds), counting the spend up to totals that are already in the HTML; reduced motion shows the totals. Its data is `src/data/traffic/wildchat.json`, laid out at build time by `lib/traffic.ts`.
+- Existing copy, model filtering and capture-view elements remain self-contained.
 
 Animations and transitions use only transform and opacity. Colors, type and spacing come from design tokens.
 

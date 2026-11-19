@@ -1,0 +1,19 @@
+---
+import TrafficCompare from "./TrafficCompare.astro";
+import TrafficResult from "./TrafficResult.astro";
+
+interface Props {
+  /** Where the footnote that explains the replay lives. */
+  note: string;
+}
+const { note } = Astro.props;
+---
+
+<TrafficCompare class="home-compare" />
+<TrafficResult note={note} />
+
+<style>
+  :global(.home-compare) {
+    margin-top: 40px;
+  }
+</style>

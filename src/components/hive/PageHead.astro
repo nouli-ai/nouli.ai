@@ -6,10 +6,8 @@ import SkyPanel from "./SkyPanel.astro";
 interface Props {
   /** The nav section to mark as current. */
   current?: Section | undefined;
-  /** The small label above the heading. */
-  kicker?: string | undefined;
 }
-const { current, kicker } = Astro.props;
+const { current } = Astro.props;
 ---
 
 <SkyPanel class="page-head" comb top>
@@ -17,12 +15,6 @@ const { current, kicker } = Astro.props;
     <HomeNav current={current} />
     <div class="intro" id="page-content">
       <slot name="above" />
-      {kicker && (
-        <p class="kicker">
-          <span class="hex" aria-hidden="true" />
-          {kicker}
-        </p>
-      )}
       <slot />
     </div>
   </div>
@@ -40,22 +32,6 @@ const { current, kicker } = Astro.props;
   .intro {
     max-width: 860px;
     padding: 64px 0 80px;
-  }
-  .intro .kicker {
-    font: 500 12px var(--mono);
-    font-stretch: 87%;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: var(--on-sky-soft);
-  }
-  .hex {
-    display: inline-block;
-    width: 10px;
-    height: 11px;
-    margin-right: 8px;
-    vertical-align: -1px;
-    background: var(--amber);
-    clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
   }
   .intro :global(h1) {
     margin: 16px 0 18px;

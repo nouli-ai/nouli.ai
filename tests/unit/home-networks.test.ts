@@ -5,7 +5,6 @@ import { example } from "../../src/lib/schemas/example";
 import { networkOf } from "../../src/lib/examples";
 import { refundReview } from "../../src/lib/home/illustrative";
 import { routeLayout, routeTargets } from "../../src/lib/home/route-map";
-import { sampleRange } from "../../src/lib/examples";
 import { answerOf, shownOptions, summaryOf } from "../../src/lib/home/networks";
 import type { Question } from "../../src/lib/home/networks";
 import { depthsOf, edgePath, estimateHeight, layoutNetwork } from "../../src/lib/home/layout";
@@ -148,8 +147,4 @@ test("example schema rejects ambiguous IDs, missing sources, cycles and invalid 
       ],
     }).success,
   ).toBe(false);
-});
-
-test("the examples index states the case range from the collection", () => {
-  expect(sampleRange(entries)).toEqual({ min: 100, max: 300 });
 });

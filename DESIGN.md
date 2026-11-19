@@ -28,14 +28,14 @@ Large sans-serif headlines in regular weight, sentence case, tight negative trac
 
 Show Nouli itself: decision networks with their probabilities, and recordings of the product. No abstract stand-ins.
 
-- **Apply:** every question shows its whole answer distribution, each option with its bar and probability and the picked one highlighted. A bare "Yes 0.92" is never shown. Readouts use mono with tabular figures. The prototype video is a recording of the clickable prototype, labeled "invented data".
+- **Apply:** every question shows its whole answer distribution, each option with its bar and probability and the picked one highlighted. A bare "Yes 0.92" is never shown. Readouts use mono with tabular figures.
 - **More:** larger panels, more of the interface. **Less:** one focused step and its readout.
 
 ### Living network
 
 Networks resolve step by step and light their edges as answers flow. The home routing map lights its edges once.
 
-- **Apply:** motion lives in the networks and the sky. Elsewhere it is limited to short reveals.
+- **Apply:** motion lives in the networks, the sky and the traffic comparison, which plays once. Elsewhere it is limited to short reveals.
 - **More:** denser networks and pointer response. **Less:** a static network that animates only on interaction.
 
 ### Soft geometry
@@ -66,15 +66,16 @@ Colors live in `src/styles/tokens.css`; the shader and canvases read them at run
 
 ## Page patterns
 
-- **Page header:** a rounded sky panel with the navigation, a mono kicker or breadcrumb, a large quiet headline and a short subheadline (`PageHead`). The home hero adds the contact button and the routing map.
+- **Page header:** a rounded sky panel with the navigation, an optional breadcrumb, a large quiet headline and a short subheadline (`PageHead`). The home hero adds the "See how it works" link and the routing map. No label repeats what the navigation or headline already says.
 - **Sections:** a large light heading, optionally beside a one-line lede, then the content.
-- **Network panel:** a sky panel with a mono caption bar (session name on the left, mode or hint on the right) and the network inside.
+- **Network panel:** a sky panel with a mono caption bar naming the case, and the network inside.
+- **Traffic comparison:** two white cards side by side, not sky panels, so the route colors (from the sky palette, amber for decisions) never sit on the sky. Each card has a mono caption, the flow, and one spent total.
 - **Cards:** white, rounded, hairline border; amber border on hover.
 - **Footer:** one line of small links.
 
 ## Networks
 
-- **Home page:** the routing map and the closing network are invented and labeled "illustrative". The real data lives on the examples pages, and the home page links there. The prototype video is labeled "invented data".
+- **Home page:** the routing map and the closing network are invented and labeled "illustrative". The real data lives on the examples pages, and the home page links there.
 - **Invented networks** turn on judgment a fixed rule can't make: intent, tone, credibility, fit. Each reads more than one source, and code handles the exact parts: limits, dates, scores, routing. Shapes vary: questions that read earlier answers, side links, more than one output. Keep them to four or five columns, at most four options or three checks per card, and short facts.
 - **Examples pages:** one real case per public dataset, with every option and recorded probability. Rules and computed steps are labeled as code. Each page states the routine work, measured stats (cases run, model decisions per case, median time, cost per 1,000 cases), where the cases were routed, and which steps a model decides. Small print names the source, license, model and sample. Accuracy comparisons stay out of the page body.
 - **Content:** no graphic cases (deaths, amputations or vivid injuries), and no medical cases on the home page.
@@ -89,7 +90,6 @@ Colors live in `src/styles/tokens.css`; the shader and canvases read them at run
 
 - Text meets WCAG AA. Every effect works by keyboard and touch, pauses offscreen and in hidden tabs, and has a reduced-motion form that shows the settled state.
 - Recorded numbers are available to assistive technology as static text; animated counters are hidden from it.
-- The prototype video keeps its native controls, plays only while on screen, and stays still under reduced motion.
 - Without JavaScript, every network, the routing map, every answer distribution and every install command are still present.
 - Narrow layouts put at most two cards side by side, and one on phones. Labels wrap rather than truncate.
 
@@ -97,5 +97,5 @@ Colors live in `src/styles/tokens.css`; the shader and canvases read them at run
 
 - Astro static site with vanilla TypeScript custom elements. Third-party scripts and motion libraries need an ADR.
 - Fonts are self-hosted.
-- Imagery is limited to the networks, the logo and recorded product views.
+- Imagery is limited to the networks, the traffic comparison, the logo and recorded product views.
 - The logo is the existing bee (`public/brand/bee.svg`) with the wordmark.

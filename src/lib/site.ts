@@ -28,7 +28,6 @@ export type Section = "models" | "guide" | "examples";
 
 /** The main navigation. Pages without a section, such as the home page's anchors, are never current. */
 export const hiveNavigation: readonly (Link & { section?: Section })[] = [
-  { href: "/#how", label: "How it works" },
   { href: "/examples/", label: "Examples", section: "examples" },
   { href: "/models/", label: "Models", section: "models" },
   { href: "/guide/", label: "Open source", section: "guide" },

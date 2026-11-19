@@ -32,7 +32,6 @@ const views = [
         {label}
       </button>
     ))}
-    <span>current TUI · recorded answers</span>
   </div>
   <pre
     class="tui-screen"
@@ -86,11 +85,6 @@ const views = [
     color: var(--term-bg);
     background: var(--term-fg);
     border-color: var(--term-fg);
-  }
-  .tui-controls > span {
-    margin-left: auto;
-    color: var(--term-dim);
-    font-size: 10px;
   }
   .tui-controls button:focus-visible {
     outline: 2px solid var(--term-focus);
@@ -149,9 +143,5 @@ const views = [
     }
   }
   @media (max-width: 600px) {
-    .tui-controls > span {
-      flex-basis: 100%;
-      margin: 4px 0 0;
-    }
   }
 </style>

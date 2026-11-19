@@ -83,6 +83,11 @@
     --glass-shadow: #1c174840;
     --glass-track: #17152b12;
     --net-edge: #ffffff66;
+    /* Where replayed calls go in the traffic comparison, drawn on white cards. */
+    --route-frontier: var(--sky-rose);
+    --route-cache: var(--hive-soft);
+    --route-code: var(--sky-violet);
+    --route-decision: var(--amber);
     /* Canvas colors as "r, g, b" so the network can vary their opacity. */
     --net-glow: 255, 210, 122;
     --net-comb: 255, 240, 215;

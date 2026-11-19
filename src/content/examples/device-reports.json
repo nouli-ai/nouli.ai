@@ -14,7 +14,7 @@
   "context": "Device makers sort every incident report by what happened to the patient and what failed, then send it to the right review before the reporting deadline.",
   "sample": {
     "count": 300,
-    "unit": "real reports"
+    "unit": "reports"
   },
   "stats": {
     "decisions": 2.6,

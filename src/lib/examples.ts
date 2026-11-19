@@ -20,9 +20,3 @@ export const networkOf = (entry: ExampleEntry): Network => ({
   session: entry.id,
   steps: entry.data.steps,
 });
-
-/** The smallest and largest number of cases any example's network ran on. */
-export function sampleRange(entries: readonly ExampleEntry[]): { min: number; max: number } {
-  const counts = entries.map((entry) => entry.data.sample.count);
-  return { min: Math.min(...counts), max: Math.max(...counts) };
-}
