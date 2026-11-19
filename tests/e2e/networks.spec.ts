@@ -37,6 +37,30 @@ async function expectNoOverlap(page: Page): Promise<void> {
   expect(overlaps).toEqual([]);
 }
 
+async function expectMapFits(page: Page): Promise<void> {
+  const problems = await page.locator(".map").evaluateAll((maps) =>
+    maps.flatMap((map) => {
+      const boxes = [...map.querySelectorAll<HTMLElement>(".node")].map((el) => ({
+        name: el.textContent?.trim() ?? "",
+        rect: el.getBoundingClientRect(),
+      }));
+      return boxes.flatMap((a, i) => {
+        const found = a.rect.left < 0 || a.rect.right > innerWidth ? [`outside ${a.name}`] : [];
+        for (const b of boxes.slice(i + 1))
+          if (
+            a.rect.left < b.rect.right - 1 &&
+            b.rect.left < a.rect.right - 1 &&
+            a.rect.top < b.rect.bottom - 1 &&
+            b.rect.top < a.rect.bottom - 1
+          )
+            found.push(`${a.name} overlaps ${b.name}`);
+        return found;
+      });
+    }),
+  );
+  expect(problems).toEqual([]);
+}
+
 for (const width of [390, 720, 1440]) {
   test(`every recorded network fits at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
@@ -47,65 +71,18 @@ for (const width of [390, 720, 1440]) {
       await expectNoOverlap(page);
     }
     await page.goto("/");
-    for (const name of ["Support", "Finance", "Sales", "Operations", "Compliance"]) {
-      await page.locator("net-tabs").getByRole("button", { name, exact: true }).click();
-      await expectNoOverlap(page);
-    }
-    await page
-      .locator("net-modes")
-      .getByRole("button", { name: /Branch/u })
-      .click();
-    await expectNoOverlap(page);
+    await page.evaluate(() => document.fonts.ready);
+    await expectMapFits(page);
   });
 }
 
-test("industry state survives reload, Back, and Forward", async ({ page }) => {
-  await page.goto("/");
-  const tabs = page.locator("net-tabs");
-  await tabs.getByRole("button", { name: "Sales", exact: true }).click();
-  await expect(page).toHaveURL(/industry=Sales/u);
-  await page.reload();
-  await expect(tabs.locator('[data-team-frame="Sales"]')).toBeVisible();
-  await tabs.getByRole("button", { name: "Operations", exact: true }).click();
-  await page.goBack();
-  await expect(tabs.getByRole("button", { name: "Sales", exact: true })).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
-  await page.goForward();
-  await expect(tabs.locator('[data-team-frame="Operations"]')).toBeVisible();
-});
-
-test("keyboard tracing, static accessible probabilities, and live reduced motion", async ({
+test("example networks keep static probabilities and follow live reduced motion", async ({
   page,
 }) => {
-  await page.goto("/");
-  const net = page.locator("net-inspector decision-net");
-  const primary = net.locator('[data-id="verdict"]');
-  await primary.focus();
-  await expect(primary).toHaveClass(/trace/u);
-  await expect(net.locator('[data-id="email"]')).toHaveClass(/trace/u);
+  await page.goto("/examples/vulnerability-triage/");
+  const net = page.locator("decision-net").first();
   await expect(net.locator(".on").first()).toHaveAttribute("aria-hidden", "true");
-  await expect(net.locator(".sr-only").first()).toHaveText("0.88");
-  await page.keyboard.press("Enter");
-  const inspector = page.locator("[data-inspector]");
-  await expect(inspector).toBeVisible();
-  await page.locator("net-tabs button").first().focus();
-  await expect(inspector).toBeHidden();
+  await expect(net.locator(".sr-only").first()).not.toBeEmpty();
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(net.locator(".wait, .active")).toHaveCount(0);
-  await page.emulateMedia({ reducedMotion: "no-preference" });
-});
-
-test("all industry networks remain readable without JavaScript", async ({ browser }) => {
-  const context = await browser.newContext({ javaScriptEnabled: false });
-  try {
-    const page = await context.newPage();
-    await page.goto("/");
-    for (const name of ["Support", "Finance", "Sales", "Operations", "Compliance"])
-      await expect(page.locator(`[data-team-frame="${name}"]`)).toBeVisible();
-    await expect(page.locator("net-modes")).toContainText("Test a what-if");
-  } finally {
-    await context.close();
-  }
 });

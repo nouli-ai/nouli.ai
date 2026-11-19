@@ -1,14 +1,12 @@
 ---
-import { hiveNavigation, repository } from "../../lib/site";
+import { contact, hiveNavigation, repository } from "../../lib/site";
 import type { Section } from "../../lib/site";
 
 interface Props {
   /** The section to mark as the current page. */
   current?: Section | undefined;
-  /** Where Install leads: the install box on the home page, or the home page's elsewhere. */
-  install?: string;
 }
-const { current, install = "/#install" } = Astro.props;
+const { current } = Astro.props;
 const links = hiveNavigation;
 ---
 
@@ -20,14 +18,14 @@ const links = hiveNavigation;
     </a>
     <nav aria-label="Main navigation">
       {links.map(({ href, label, section }) => (
-        <a href={href} aria-current={section === current ? "page" : undefined}>
+        <a href={href} aria-current={section && section === current ? "page" : undefined}>
           {label}
         </a>
       ))}
       <a href={repository}>GitHub</a>
     </nav>
-    <a class="install" href={install}>
-      Install
+    <a class="install" href={contact.href}>
+      Talk to us
     </a>
   </header>
 </float-nav>
@@ -96,6 +94,7 @@ const links = hiveNavigation;
     font-size: 15px;
   }
   nav a {
+    white-space: nowrap;
     text-decoration: none;
     color: var(--nav-soft);
     display: inline-flex;
@@ -107,6 +106,8 @@ const links = hiveNavigation;
     color: var(--nav-ink);
   }
   .install {
+    flex-shrink: 0;
+    white-space: nowrap;
     display: inline-flex;
     align-items: center;
     height: 38px;
@@ -127,7 +128,7 @@ const links = hiveNavigation;
       transition: none;
     }
   }
-  @media (max-width: 720px) {
+  @media (max-width: 760px) {
     float-nav {
       height: 114px;
     }
@@ -144,12 +145,19 @@ const links = hiveNavigation;
     }
     nav {
       order: 3;
+      flex-wrap: wrap;
       width: 100%;
       margin-left: 0;
-      gap: 20px;
+      gap: 6px 18px;
     }
     .install {
       margin-left: auto;
+    }
+  }
+  /* The links take two rows on phones. */
+  @media (max-width: 500px) {
+    float-nav {
+      height: 146px;
     }
   }
 </style>

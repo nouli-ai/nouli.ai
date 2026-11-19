@@ -1,0 +1,173 @@
+---
+import { routeLayout } from "../../lib/home/route-map";
+import type { Point } from "../../lib/home/layout";
+
+interface Props {
+  /** The accessible name of the map. */
+  label: string;
+  class?: string;
+}
+const { label, class: className } = Astro.props;
+const { agent, nouli, feed, targets } = routeLayout();
+const at = ({ x, y }: Point): string => `--x:${(x * 100).toFixed(2)}%;--y:${(y * 100).toFixed(2)}%`;
+---
+
+<div class:list={["map", className]} role="group" aria-label={label}>
+  <svg class="edges" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true">
+    <path d={feed} />
+    {targets.map(({ path }) => (
+      <path d={path} />
+    ))}
+    <path class="lit" d={feed} style="--i:0" />
+    {targets.map(({ path }, index) => (
+      <path class="lit" d={path} style={`--i:${index + 1}`} />
+    ))}
+  </svg>
+  <div class="node fact" style={at(agent)}>
+    <span class="k">Your agent</span>
+    <span class="q">Support agent</span>
+  </div>
+  <div class="node nouli" style={at(nouli)}>
+    <span class="k">Nouli</span>
+    <span class="q">Tests each step against your LLM</span>
+  </div>
+  <ul class="targets">
+    {targets.map(({ id, runsOn, step, at: point }, index) => (
+      <li class="node target" data-id={id} style={`${at(point)};--i:${index + 1}`}>
+        <span class="q">{runsOn}</span>
+        <span class="t">{step}</span>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<style>
+  .map {
+    position: relative;
+    height: 520px;
+  }
+  .edges {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .edges path {
+    fill: none;
+    stroke: var(--net-edge);
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+  }
+  .edges .lit {
+    stroke: var(--amber-soft);
+    stroke-width: 2;
+    opacity: 0;
+    animation: light 0.6s ease calc(0.3s + var(--i) * 0.7s) both;
+  }
+  .targets {
+    list-style: none;
+  }
+  .node {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    translate: -50% -50%;
+    display: grid;
+    gap: 2px;
+    padding: 11px 13px 12px;
+    color: var(--hive-ink);
+    background: var(--glass);
+    border: 1px solid var(--glass-edge);
+    border-radius: 12px;
+    box-shadow: 0 16px 40px var(--glass-shadow);
+    backdrop-filter: blur(8px);
+  }
+  .fact {
+    width: 21%;
+    background: var(--glass-fact);
+  }
+  .nouli {
+    width: 25%;
+  }
+  .target {
+    width: 38%;
+  }
+  .target::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border: 2px solid var(--amber);
+    border-radius: inherit;
+    opacity: 0;
+    animation: light 0.6s ease calc(0.3s + var(--i) * 0.7s) both;
+  }
+  .k {
+    font: 500 10px/1.3 var(--mono);
+    font-stretch: 87%;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--hive-ink);
+  }
+  .k::before,
+  .target .q::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 9px;
+    margin-right: 6px;
+    vertical-align: -1px;
+    background: var(--amber);
+    clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  }
+  .q {
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 1.25;
+  }
+  .t {
+    font-size: 13px;
+    line-height: 1.35;
+    color: var(--hive-soft);
+  }
+  @keyframes light {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .edges .lit,
+    .target::after {
+      animation: none;
+      opacity: 1;
+    }
+  }
+  /* Phones: the same map as a list, top to bottom. */
+  @media (max-width: 560px) {
+    .map {
+      height: auto;
+      display: grid;
+      gap: 10px;
+    }
+    .edges {
+      display: none;
+    }
+    .node {
+      position: relative;
+      left: auto;
+      top: auto;
+      translate: none;
+      width: auto;
+    }
+    .targets {
+      display: grid;
+      gap: 8px;
+      margin-left: 18px;
+      padding-left: 14px;
+      border-left: 1px solid var(--amber-soft);
+    }
+  }
+</style>

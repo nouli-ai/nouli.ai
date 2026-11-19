@@ -16,12 +16,20 @@ export interface Link {
   label: string;
 }
 
+/** Where "Run Nouli on your traffic" and "Talk to us" lead while the hosted platform is in early access. */
+const contactEmail = "nouli@aravindn.com";
+export const contact = {
+  email: contactEmail,
+  href: `mailto:${contactEmail}?subject=${encodeURIComponent("Run Nouli on our traffic")}`,
+} as const;
+
 /** The section of the site a page belongs to, marked as current in the navigation. */
 export type Section = "models" | "guide" | "examples";
 
-/** The main navigation. */
-export const hiveNavigation = [
+/** The main navigation. Pages without a section, such as the home page's anchors, are never current. */
+export const hiveNavigation: readonly (Link & { section?: Section })[] = [
+  { href: "/#how", label: "How it works" },
   { href: "/examples/", label: "Examples", section: "examples" },
-  { href: "/guide/", label: "Guide", section: "guide" },
   { href: "/models/", label: "Models", section: "models" },
-] as const;
+  { href: "/guide/", label: "Open source", section: "guide" },
+];

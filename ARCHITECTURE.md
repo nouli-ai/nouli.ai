@@ -4,17 +4,17 @@ The static Astro site follows [ADR 0001](docs/adr/0001-astro-site-stack.md), [AG
 
 ## Routes and data
 
-- `/` composes the hive components in `src/components/hive/`. Its networks are illustrative and live in `src/lib/home/` (`illustrative.ts` and `teams/`).
+- `/` composes the hive components in `src/components/hive/`. Its hero routing map (`RouteMap`, positioned by `lib/home/route-map.ts`) and the closing panel's network (`lib/home/illustrative.ts`) are illustrative. The prototype video and its captions live in `public/media/`.
 - `/examples/` and `/examples/<slug>/` render the `examples` content collection from `src/content/examples/*.json`. Its schema validates step IDs, ancestry, probability bounds, and rounded distribution totals. Each page includes the source, license, sample, model, measured stats, routing counts and notes.
 - The eight retired walkthrough URLs remain Astro redirects. The URL inventory verifies that each target exists. HTML validation permits either doctype case because Astro generates lowercase doctypes in redirects; the remaining recommended rules still apply.
 - `/guide/` renders its recorded meeting capture. `/models/` and the model pages render the `models` collection.
 - Files under `public/` retain their published URLs, including `/install.sh` and `/llms.txt`. `integrations/sitemap.ts` writes `/sitemap.xml`.
 
-`lib/site.ts` holds shared URLs, install commands and navigation. Model facts live in `content/models/`. Example facts and probabilities live in `content/examples/`. Home operations, the network assignments and the measured count of models ahead of Jev live in `lib/home/teams.ts`; the total model count derives from the collection.
+`lib/site.ts` holds shared URLs, install commands and navigation. Model facts live in `content/models/`. Example facts and probabilities live in `content/examples/`. The contact address lives in `lib/site.ts`; the home page's model count derives from the collection.
 
 ## Rendering and interaction
 
-`BaseLayout` produces the shared head, CSP, main landmark, skip link and footer slot. `HivePage` wraps it for every page: each page draws the navigation in its sky header (`PageHead`, or the home hero) and points the skip link at the content after it. Published text, every answer distribution, SVG fallback edges, install commands and the terminal's final screen are present without JavaScript. All industry networks remain readable without scripts.
+`BaseLayout` produces the shared head, CSP, main landmark, skip link and footer slot. `HivePage` wraps it for every page: each page draws the navigation in its sky header (`PageHead`, or the home hero) and points the skip link at the content after it. Published text, the routing map, every answer distribution, SVG fallback edges and install commands are present without JavaScript.
 
 `lib/home/layout.ts` computes graph ancestry, positions and conservative wrapped-card heights at build time. Wide layouts use columns by depth. Narrow layouts run top to bottom with up to two cards per row, and one on phones. Deep networks switch to the vertical form earlier to keep tablet layouts readable.
 
@@ -22,9 +22,9 @@ Vanilla custom elements enhance this HTML:
 
 - `float-nav` floats the navigation after scrolling and marks whether sky or page is behind it.
 - `sky-field` draws a viewport-aligned shader sky and pointer honeycomb. Colors come from tokens. Measurements refresh on scroll and resize instead of in every frame.
-- `decision-net` reads the placed HTML cards, draws edges and pulses, and animates the visible probabilities. Static numbers remain in the accessibility tree. Only inspector cards are buttons. `net-inspector` supports keyboard tracing, Escape and closing when focus leaves.
-- `net-tabs` selects an industry and reflects it in `?industry=`, including Back and Forward. `net-modes` demonstrates the four operations using recorded answers.
-- The terminal replay has its own Pause and Restart controls. Scripts follow the live reduced-motion preference, stop frames offscreen or in hidden tabs, and release listeners and observers on disconnect.
+- `decision-net` reads the placed HTML cards, draws edges and pulses, and animates the visible probabilities. Static numbers remain in the accessibility tree.
+- The routing map lights its edges once with CSS in under five seconds; reduced motion shows them lit.
+- `play-in-view` plays the muted prototype video while it is on screen, keeps its native controls, and stays paused under reduced motion or after the visitor pauses it. Scripts follow the live reduced-motion preference, stop frames offscreen or in hidden tabs, and release listeners and observers on disconnect.
 - `reveal-sections` batches section measurements before writes; everything starts visible, and reduced motion reveals remain readable.
 - Existing copy, release lookup, model filtering and capture-view elements remain self-contained.
 
