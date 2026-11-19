@@ -2,22 +2,21 @@
 import { getCollection } from "astro:content";
 import HivePage from "../../components/hive/HivePage.astro";
 import PageHead from "../../components/hive/PageHead.astro";
-import { examplePath, inOrder, sampleRange } from "../../lib/examples";
+import { examplePath, inOrder } from "../../lib/examples";
 import { countWord } from "../../lib/models";
 
 const examples = inOrder(await getCollection("examples"));
-const { min, max } = sampleRange(examples);
 ---
 
 <HivePage
   title="Examples · Nouli"
   description="Routine work run on decision models and code, on real public data: vulnerability advisories, workplace injury reports, medical device reports, aviation safety reports and commercial contracts."
 >
-  <PageHead current="examples" kicker="Examples">
+  <PageHead current="examples">
     <h1>Routine work on decision models and code</h1>
     <p>
       {countWord(examples.length)} public datasets, from security advisories to aviation safety
-      reports. Each network ran on {min} to {max} real cases.
+      reports.
     </p>
   </PageHead>
 
@@ -51,7 +50,7 @@ const { min, max } = sampleRange(examples);
   }
   .cards {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 14px;
     list-style: none;
   }
@@ -99,5 +98,15 @@ const { min, max } = sampleRange(examples);
     font-stretch: 87%;
     font-style: normal;
     color: var(--amber-ink);
+  }
+  @media (max-width: 900px) {
+    .cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 560px) {
+    .cards {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

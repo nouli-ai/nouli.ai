@@ -9,7 +9,7 @@ import { install, latestRelease } from "../../lib/site";
   title="Open-source engine guide · Nouli"
   description="Install the open-source Nouli engine, configure a decision model, and use its terminal app or CLI to ask questions, add facts, branch sessions, and blend their histories."
 >
-  <PageHead current="guide" kicker="Open source · MIT">
+  <PageHead current="guide">
     <h1>Run the open-source engine</h1>
     <p>Install the Nouli engine, connect a model and build your first decision network.</p>
   </PageHead>
@@ -19,7 +19,7 @@ import { install, latestRelease } from "../../lib/site";
         <a href="#install">Install</a>
       </li>
       <li>
-        <a href="#provider">Configure a provider</a>
+        <a href="#provider">Connect a model</a>
       </li>
       <li>
         <a href="#interactive">Interactive mode</a>
@@ -174,23 +174,13 @@ api_key_env = "GATEWAY_TOKEN"</code></pre>
           playsinline
           preload="metadata"
           poster="/media/tui-workshop.png"
-          aria-label="Current Nouli terminal controls: model picker, status line, help, resizing and copy mode"
+          aria-label="Nouli terminal controls: model picker, status line, help, resizing and copy mode"
         >
           <source src="/media/tui-controls.webm" type="video/webm" />
           Your browser cannot play this recording.{" "}
           <a href="/media/tui-controls.webm">Download it</a>.
         </video>
-        <figcaption>
-          Current terminal controls at normal speed: model picker, status preferences, help, Ctrl-G
-          resizing, and Ctrl-P copy mode. Recorded locally with saved answers.
-        </figcaption>
       </figure>
-      <p>
-        These captures replay saved model answers in the current TUI. Use Form to see the inputs
-        before sending, Answer for the result, and Decisions for the graph. Start with{" "}
-        <a href="/examples/meeting/">one session and three travel questions</a>, then try a{" "}
-        <a href="/examples/recall/">multi-session recall response</a>.
-      </p>
       <table tabindex="0">
         <thead>
           <tr>

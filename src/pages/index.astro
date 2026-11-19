@@ -1,22 +1,13 @@
 ---
-import { getCollection } from "astro:content";
-import DecisionNet from "../components/hive/DecisionNet.astro";
 import HivePage from "../components/hive/HivePage.astro";
-import HomeInstall from "../components/hive/HomeInstall.astro";
+import HomeOpenSource from "../components/hive/HomeOpenSource.astro";
 import HomeNav from "../components/hive/HomeNav.astro";
 import RouteMap from "../components/hive/RouteMap.astro";
 import SkyPanel from "../components/hive/SkyPanel.astro";
-import { refundReview } from "../lib/home/illustrative";
+import HomeClose from "../components/hive/HomeClose.astro";
+import HomeTraffic from "../components/hive/HomeTraffic.astro";
+import TrafficNote from "../components/hive/TrafficNote.astro";
 import { homeApplication, homeDescription, homeTitle } from "../lib/seo/home";
-import { contact, huggingFace } from "../lib/site";
-
-const modelCount = (await getCollection("models")).length;
-const steps = [
-  ["Connect your agent", "Point its model calls at Nouli. Nothing changes yet."],
-  ["Split the work", "Nouli groups the calls into jobs, and each job into steps."],
-  ["Test against your LLM", "Cheaper options run next to your LLM until the answers match."],
-  ["Move traffic in stages", "A step moves back on its own if its answers drift."],
-] as const;
 ---
 
 <HivePage
@@ -37,13 +28,8 @@ const steps = [
           <p class="sub">
             Nouli runs each step of your agent on the cheapest option that gives the same answer.
           </p>
-          <p class="ctas start">
-            <a class="btn amber" href={contact.href}>
-              Run Nouli on your traffic
-            </a>
-            <a class="btn line" href="#how">
-              See how it works
-            </a>
+          <p class="see">
+            <a href="#how">See how it works →</a>
           </p>
         </div>
         <RouteMap
@@ -57,123 +43,18 @@ const steps = [
     </p>
   </SkyPanel>
 
-  <section class="wrap proof" aria-label="Results">
-    <p>
-      <strong>
-        68<i>%</i>
-      </strong>
-      <span>
-        lower cost than a frontier model on 10 routine jobs
-        <a class="note" href="#replay-note" aria-label="How we measured this">
-          *
-        </a>
-      </span>
-    </p>
-    <p>
-      <strong>{modelCount}</strong>
-      <span>
-        open models on <a href={huggingFace}>Hugging Face</a>
-      </span>
-    </p>
-  </section>
-
-  <section class="wrap center" data-reveal>
-    <h2>Many agents send every step to a frontier model</h2>
-    <p class="lede">Even simple ones, like “Is this a refund request?”</p>
-  </section>
-
-  <section class="wrap" id="how">
-    <h2 data-reveal>Each step moves only after it matches your LLM</h2>
-    <ol class="steps" data-reveal>
-      {steps.map(([name, text], index) => (
-        <li>
-          <i>{String(index + 1).padStart(2, "0")}</i>
-          <b>{name}</b>
-          <span>{text}</span>
-        </li>
-      ))}
-    </ol>
-    <SkyPanel class="panel">
-      <div class="bar">
-        <span>Nouli prototype · invented data</span>
-      </div>
-      <play-in-view class="video">
-        <video
-          poster="/media/nouli-prototype.jpg"
-          width="1600"
-          height="900"
-          muted
-          loop
-          playsinline
-          controls
-          preload="none"
-          aria-label="Nouli prototype: a support agent's calls grouped into jobs, tested, and moved"
-        >
-          <source src="/media/nouli-prototype.webm" type="video/webm" />
-          <source src="/media/nouli-prototype.mp4" type="video/mp4" />
-          <track
-            kind="captions"
-            src="/media/nouli-prototype.vtt"
-            srclang="en"
-            label="English"
-            default
-          />
-        </video>
-      </play-in-view>
-    </SkyPanel>
-  </section>
-
-  <section class="wrap">
-    <h2 data-reveal>You keep your data and your models</h2>
-    <ul class="trust" data-reveal>
-      <li>
-        <b>Your bucket</b>
-        <span>Calls, networks and fine-tuned models stay in your storage.</span>
-      </li>
-      <li>
-        <b>Unsure cases</b>
-        <span>They go to your LLM, the way they do today.</span>
-      </li>
-      <li>
-        <b>Fail open</b>
-        <span>If Nouli is down, calls go straight to your provider.</span>
-      </li>
-    </ul>
+  <section class="wrap traffic" id="how">
+    <div class="center" data-reveal>
+      <h2>We fit every call to the cheapest route that gets it right</h2>
+    </div>
+    <HomeTraffic note="#replay-note" />
   </section>
 
   <section class="wrap" id="open-source">
-    <SkyPanel class="panel oss">
-      <div class="oss-copy">
-        <h2>Built on our open-source engine</h2>
-        <p>Run decision networks and our {modelCount} models on your own machine.</p>
-        <p class="links">
-          <a href="/guide/">Read the guide →</a>
-          <a href="/models/">See the models →</a>
-        </p>
-      </div>
-      <HomeInstall />
-    </SkyPanel>
+    <HomeOpenSource />
   </section>
 
-  <SkyPanel class="close-panel" comb>
-    <DecisionNet
-      network={refundReview}
-      label="Atmosphere"
-      height={520}
-      pad={0.05}
-      decorative
-      class="close-net"
-    />
-    <h2>Big inference bill?</h2>
-    <p class="ctas">
-      <a class="btn amber" href={contact.href}>
-        Run Nouli on your traffic
-      </a>
-      <a class="btn line" href="#how">
-        See how it works
-      </a>
-    </p>
-  </SkyPanel>
+  <HomeClose />
 
   <div class="wrap">
     <p class="why">
@@ -183,20 +64,11 @@ const steps = [
         build into one decision.
       </span>
     </p>
-    <p class="fine" id="replay-note">
-      * Nouli replay of 133,810 real ChatGPT calls (WildChat), November 2026: 10 short-answer jobs
-      against gpt-6.2-astra at list prices. Unsure cases go to the LLM. Answers matched as often as
-      the original model agrees with itself (92.5%).
-      <br />
-      The hosted platform is in early access. The engine is MIT-licensed, and each model has its own
-      license. Install the engine with Homebrew on Apple silicon, or the install script on Linux
-      (glibc 2.38+) or Windows 11 (ARM64 and x64).
-    </p>
+    <TrafficNote id="replay-note" class="fine" />
   </div>
 </HivePage>
 
 <script>
-  import "../client/play-in-view";
   import "../client/reveal";
 </script>
 
@@ -205,8 +77,7 @@ const steps = [
     width: min(1200px, calc(100% - 48px));
     margin: 0 auto;
   }
-  :global(.hero-panel),
-  :global(.close-panel) {
+  :global(.hero-panel) {
     margin: 12px;
     border-radius: 28px;
   }
@@ -274,213 +145,20 @@ const steps = [
     max-width: 14em;
     margin: 0 auto;
   }
-  .lede {
-    font-size: 20px;
-    color: var(--hive-soft);
-  }
-  .center .lede {
-    max-width: 28em;
-    margin: 20px auto 0;
-  }
-  .proof {
-    display: grid;
-    grid-template-columns: 1.4fr 1fr;
-    gap: 48px;
-    padding-top: 96px;
-  }
-  .proof p {
-    display: grid;
-    align-content: start;
-    gap: 10px;
-    padding-top: 18px;
-    border-top: 1px solid var(--hive-ink);
-  }
-  .proof strong {
-    font-weight: 400;
-    font-size: clamp(72px, 9vw, 132px);
-    letter-spacing: -0.06em;
-    line-height: 0.9;
-    font-variant-numeric: tabular-nums;
-  }
-  .proof strong i {
-    font-style: normal;
-    color: var(--amber-ink);
-  }
-  .proof span {
-    max-width: 24em;
-    font-size: 18px;
-    color: var(--hive-soft);
-  }
-  .proof a {
-    color: var(--amber-ink);
-  }
-  .note {
-    display: inline-block;
-    min-width: 24px;
-    min-height: 24px;
-    margin-left: 2px;
-  }
-  .steps {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 14px;
-    margin-top: 40px;
-    list-style: none;
-  }
-  .steps li {
-    display: grid;
-    align-content: start;
-    gap: 6px;
-    padding: 22px;
-    border: 1px solid var(--hive-line);
-    border-radius: 20px;
-    background: var(--hive-card);
-  }
-  .steps i {
-    font: 500 12px var(--mono);
-    font-style: normal;
-    color: var(--amber-ink);
-  }
-  .steps b {
-    font-weight: 500;
-    font-size: 20px;
-    letter-spacing: -0.02em;
-  }
-  .steps span {
-    color: var(--hive-soft);
-  }
-  :global(.sky.panel) {
+  .see {
     margin-top: 28px;
-    border-radius: 24px;
-    border: 1px solid var(--sky-line);
-    box-shadow: 0 30px 70px var(--glass-shadow);
-  }
-  .bar {
-    display: flex;
-    align-items: center;
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--sky-line);
-    font: 11px var(--mono);
-    font-stretch: 87%;
-    color: var(--on-sky-soft);
-  }
-  .video {
-    display: block;
-    padding: 18px;
-  }
-  .video video {
-    display: block;
-    width: 100%;
-    height: auto;
-    border-radius: 12px;
-    background: var(--sky-high);
-  }
-  .trust {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 14px;
-    margin-top: 40px;
-    list-style: none;
-  }
-  .trust li {
-    display: grid;
-    align-content: start;
-    gap: 6px;
-    padding: 22px;
-    border: 1px solid var(--hive-line);
-    border-radius: 20px;
-    background: var(--hive-card);
-  }
-  .trust b {
-    font-weight: 500;
-    font-size: 20px;
-    letter-spacing: -0.02em;
-  }
-  .trust span {
-    color: var(--hive-soft);
-  }
-  :global(.sky.oss) {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    align-items: center;
-    padding: 56px;
-  }
-  .oss h2 {
-    font-size: clamp(30px, 3.2vw, 44px);
-  }
-  .oss-copy p {
-    margin-top: 14px;
-    font-size: 18px;
-    color: var(--on-sky-soft);
-  }
-  .oss-copy .links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 24px;
     font-weight: 500;
   }
-  .links a {
+  .see a {
     display: inline-flex;
     align-items: center;
     min-height: 24px;
     color: var(--on-sky);
-  }
-  :global(.close-panel) {
-    margin-top: 130px;
-    padding: 170px 24px;
-    text-align: center;
-  }
-  :global(.close-net) {
-    position: absolute;
-    inset: 0;
-  }
-  @media (max-width: 700px) {
-    :global(.close-net) {
-      display: none;
-    }
-  }
-  :global(.close-panel) h2 {
-    max-width: 12em;
-    margin: 0 auto;
-  }
-  .ctas {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 30px;
-  }
-  .ctas.start {
-    justify-content: flex-start;
-  }
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    height: 44px;
-    padding: 0 22px;
-    border-radius: 999px;
-    font-weight: 500;
-    font-size: 15px;
     text-decoration: none;
   }
-  .amber {
-    background: var(--amber);
-    color: var(--on-amber);
-  }
-  .line {
-    border: 1px solid var(--on-sky);
-    background: var(--sky-high);
-    color: var(--on-sky);
-  }
-  .ctas a:focus-visible,
-  .links a:focus-visible {
+  .see a:focus-visible {
     outline: 2px solid var(--on-sky);
     outline-offset: 4px;
-  }
-  .proof a:focus-visible {
-    outline: 2px solid var(--amber-ink);
-    outline-offset: 2px;
   }
   .why {
     display: grid;
@@ -526,33 +204,14 @@ const steps = [
     }
   }
   @media (max-width: 900px) {
-    .hero,
-    .proof,
-    :global(.sky.oss) {
+    .hero {
       grid-template-columns: 1fr;
     }
     .hero {
       padding-top: 20px;
     }
-    .steps {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-    .trust {
-      grid-template-columns: 1fr;
-    }
-    :global(.sky.oss) {
-      padding: 32px 24px;
-    }
     section {
       padding-top: 80px;
-    }
-  }
-  @media (max-width: 560px) {
-    .steps {
-      grid-template-columns: 1fr;
-    }
-    .video {
-      padding: 10px;
     }
   }
 </style>

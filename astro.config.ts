@@ -30,8 +30,7 @@ export default defineConfig({
         "img-src 'self' data:",
         "font-src 'self'",
         "media-src 'self'",
-        // The home page looks up the latest release.
-        "connect-src 'self' https://api.github.com",
+        "connect-src 'self'",
         "object-src 'none'",
         "base-uri 'self'",
         "form-action 'none'",

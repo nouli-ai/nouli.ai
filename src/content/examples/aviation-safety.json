@@ -14,7 +14,7 @@
   "context": "Safety teams read each pilot report to find what went wrong and who should fix it. The network checks the report for 21 known problems and factors, picks the primary one, and routes it to the team that owns the fix.",
   "sample": {
     "count": 300,
-    "unit": "real reports"
+    "unit": "reports"
   },
   "stats": {
     "decisions": 22,

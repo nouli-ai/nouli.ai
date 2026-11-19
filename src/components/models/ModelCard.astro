@@ -18,10 +18,7 @@ const href = modelPath(id);
     <span>v{data.version}</span>
   </div>
   <h2>
-    <a href={href}>
-      {data.name}
-      <span aria-hidden="true">↗</span>
-    </a>
+    <a href={href}>{data.name}</a>
   </h2>
   <p>{data.summary}</p>
   <div class="model-flow">

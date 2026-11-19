@@ -15,7 +15,7 @@
   "context": "Before signing, someone checks each contract for the clauses your playbook cares about. Code finds the passages, the network checks each clause, and the playbook decides whether to sign, redline or send it to counsel. The least certain 10% go to a person.",
   "sample": {
     "count": 100,
-    "unit": "real contracts"
+    "unit": "contracts"
   },
   "stats": {
     "decisions": 11,

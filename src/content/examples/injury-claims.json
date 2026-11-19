@@ -14,7 +14,7 @@
   "context": "Claims teams code every injury report the way OSHA does before routing the claim. The network makes the five coding calls, and rules and lookups build the claim record and pick the queue.",
   "sample": {
     "count": 300,
-    "unit": "real reports"
+    "unit": "reports"
   },
   "stats": {
     "decisions": 5,

@@ -1,0 +1,249 @@
+---
+import {
+  box,
+  boxPercent,
+  count,
+  dollars,
+  percent,
+  trafficSides,
+  wildchat,
+} from "../../lib/traffic";
+
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+const sides = trafficSides(wildchat);
+const data = wildchat;
+---
+
+<traffic-compare class:list={["compare", className]}>
+  <div class="panels">
+    {sides.map((side) => (
+      <section class="panel" aria-label={side.caption}>
+        <p class="caption">{side.caption}</p>
+        <div class="stage" data-side={side.id}>
+          <div class="flow">
+            <svg
+              class="bands"
+              viewBox={`0 0 ${box.width} ${box.height}`}
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              {side.bands.map((band) => (
+                <path
+                  d={band.path}
+                  class="band"
+                  data-route={band.key}
+                  data-share={band.share}
+                  data-from={band.from.join(" ")}
+                  data-to={band.to.join(" ")}
+                />
+              ))}
+              {side.bands.map((band) => (
+                <rect
+                  class="cap"
+                  data-route={band.key}
+                  x={box.x1}
+                  y={band.to[0]}
+                  width="8"
+                  height={band.to[1] - band.to[0]}
+                />
+              ))}
+            </svg>
+            <canvas data-dots aria-hidden="true" />
+            <p
+              class="source"
+              style={`--top:${boxPercent(box.top, box.height)};--height:${boxPercent(box.span, box.height)}`}
+            >
+              <b>{count(data.totalCalls)}</b> calls
+            </p>
+          </div>
+          <ul class="labels">
+            {side.bands.map((band) => (
+              <li data-route={band.key} style={`--y:${boxPercent(band.labelY, box.height)}`}>
+                {band.name} <b>{percent(band.share)}</b>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <p class="spent">
+          <b data-meter="dollars" data-total={side.cost} aria-hidden="true">
+            {dollars(side.cost)}
+          </b>
+          <span class="sr-only">{dollars(side.cost)}</span>
+          spent
+        </p>
+      </section>
+    ))}
+  </div>
+</traffic-compare>
+
+<script>
+  import "../../client/traffic-compare";
+</script>
+
+<style>
+  traffic-compare {
+    display: block;
+  }
+  .panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .panel {
+    padding: 20px 22px 18px;
+    border: 1px solid var(--hive-line);
+    border-radius: 20px;
+    background: var(--hive-card);
+  }
+  .caption {
+    font: 500 12px var(--mono);
+    font-stretch: 87%;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--hive-soft);
+  }
+  .stage {
+    position: relative;
+    container-type: inline-size;
+    margin-top: 6px;
+  }
+  .flow {
+    position: relative;
+    aspect-ratio: 5 / 3;
+  }
+  .bands,
+  canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .band {
+    fill-opacity: 0.16;
+  }
+  .band,
+  .cap {
+    fill: var(--route);
+  }
+  [data-route="frontier"] {
+    --route: var(--route-frontier);
+  }
+  [data-route="cache"] {
+    --route: var(--route-cache);
+  }
+  [data-route="code"] {
+    --route: var(--route-code);
+  }
+  [data-route="decision"] {
+    --route: var(--route-decision);
+  }
+  .source {
+    position: absolute;
+    left: 0;
+    top: var(--top);
+    width: 20%;
+    height: var(--height);
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    border-radius: 12px;
+    background: var(--code-tint);
+    color: var(--hive-soft);
+    font-size: 13px;
+    text-align: center;
+  }
+  .source b {
+    display: block;
+    font-weight: 500;
+    font-size: 17px;
+    color: var(--hive-ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .labels {
+    list-style: none;
+  }
+  .labels li {
+    position: absolute;
+    left: 63%;
+    top: var(--y);
+    translate: 0 -50%;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  .labels li::before {
+    content: "";
+    display: inline-block;
+    width: 9px;
+    height: 10px;
+    margin-right: 7px;
+    vertical-align: -1px;
+    background: var(--route);
+    clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  }
+  .labels b {
+    margin-left: 4px;
+    font: 500 13px var(--mono);
+    font-stretch: 87%;
+    font-variant-numeric: tabular-nums;
+  }
+  .spent {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-top: 10px;
+    padding-top: 14px;
+    border-top: 1px solid var(--hive-line);
+    font-size: 14px;
+    color: var(--hive-soft);
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .spent b {
+    font-weight: 400;
+    font-size: clamp(24px, 2.6vw, 32px);
+    letter-spacing: -0.02em;
+    color: var(--hive-ink);
+    font-variant-numeric: tabular-nums;
+  }
+  @media (max-width: 980px) {
+    .panels {
+      grid-template-columns: 1fr;
+    }
+  }
+  /* Narrow panels: the labels move under the flow as a legend. */
+  @container (max-width: 480px) {
+    .labels {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 16px;
+      margin-top: 8px;
+    }
+    .labels li {
+      position: static;
+      translate: none;
+    }
+    /* The labels sit below, so the bands take the full width. */
+    .flow {
+      overflow: hidden;
+    }
+    .bands,
+    canvas {
+      width: 164%;
+    }
+    .source {
+      width: 33%;
+      font-size: 11px;
+    }
+    .source b {
+      font-size: 13px;
+    }
+  }
+</style>

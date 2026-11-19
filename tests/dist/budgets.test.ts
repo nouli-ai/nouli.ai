@@ -9,7 +9,8 @@ import { builtPages, distDir, fileFor } from "../support/site";
  */
 const budgets: [pattern: RegExp, bytes: number][] = [
   // The closing panel's network (about 6.6 kB), the sky and its pointer comb (4.8 kB), the floating
-  // navigation, copy controls, OS selection, the release lookup, reveals and the video's playback.
+  // navigation, copy controls, OS selection, reveals and the traffic comparison
+  // (about 3 kB).
   [/^\/$/u, 20_000],
   // Every other page has the sky header and floating navigation (about 6 kB), plus:
   // the capture view buttons in the guide,

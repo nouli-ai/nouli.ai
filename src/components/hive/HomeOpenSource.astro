@@ -1,0 +1,62 @@
+---
+import HomeInstall from "./HomeInstall.astro";
+import SkyPanel from "./SkyPanel.astro";
+---
+
+<SkyPanel class="panel oss">
+  <div class="copy">
+    <h2>Built on our open-source engine</h2>
+    <p>Run decision networks on your own machine.</p>
+    <p class="links">
+      <a href="/guide/">Read the guide →</a>
+      <a href="/models/">See the models →</a>
+    </p>
+  </div>
+  <HomeInstall />
+</SkyPanel>
+
+<style>
+  :global(.sky.oss) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+    padding: 56px;
+    border-radius: 24px;
+    border: 1px solid var(--sky-line);
+    box-shadow: 0 30px 70px var(--glass-shadow);
+  }
+  @media (max-width: 900px) {
+    :global(.sky.oss) {
+      grid-template-columns: 1fr;
+      padding: 32px 24px;
+    }
+  }
+  h2 {
+    font-weight: 400;
+    font-size: clamp(30px, 3.2vw, 44px);
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+  }
+  .copy p {
+    margin-top: 14px;
+    font-size: 18px;
+    color: var(--on-sky-soft);
+  }
+  .copy .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    font-weight: 500;
+  }
+  .links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    color: var(--on-sky);
+  }
+  .links a:focus-visible {
+    outline: 2px solid var(--on-sky);
+    outline-offset: 4px;
+  }
+</style>

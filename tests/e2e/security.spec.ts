@@ -16,9 +16,6 @@ for (const url of builtPages()) {
         state.cspViolations.push(`${event.effectiveDirective}: ${event.blockedURI}`);
       });
     });
-    await page.route("https://api.github.com/**", (route) =>
-      route.fulfill({ json: { tag_name: "v0.5.1" } }),
-    );
     await page.goto(url, { waitUntil: "networkidle" });
     expect(await page.evaluate(() => window.cspViolations)).toEqual([]);
     expect(errors).toEqual([]);
