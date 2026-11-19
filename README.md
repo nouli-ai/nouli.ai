@@ -30,7 +30,7 @@ Recording and export tools live in `tools/`; their existing Python, JavaScript, 
 Python recordings require Python 3 with `pyte` and a POSIX PTY. Media rendering also requires Pillow, FFmpeg, and local monospace fonts. `readme-hero.mjs` uses the `subset-font` development dependency. These are manual tool prerequisites, not website runtime requirements.
 
 ```sh
-# Refresh the wide and narrow home replays.
+# Refresh the wide and narrow terminal replays (README media; the site no longer shows them).
 node tools/record-cli-replay.mjs --nouli NOULI_REPO/target/release/nouli --python /path/to/python
 node tools/record-cli-replay.mjs --nouli NOULI_REPO/target/release/nouli --python /path/to/python --columns 64
 # Render committed replay cells as README media and website video.
@@ -41,7 +41,7 @@ node tools/readme-hero.mjs > NOULI_REPO/.github/readme/hero.svg
 node tools/readme-hero.mjs --recall --nouli-repo NOULI_REPO > NOULI_REPO/.github/readme/recall.svg
 ```
 
-Home recordings write `src/data/replays/{wide,narrow,provenance}.json`, refresh `src/data/graphs/home.json` on wide runs, and keep `--tour` output in `tools/data/tui-tour.json`. `recorded-provider.mjs` returns saved answers without live provider calls.
+Terminal recordings write `src/data/replays/{wide,narrow,provenance}.json`, refresh `src/data/graphs/home.json` on wide runs, and keep `--tour` output in `tools/data/tui-tour.json`. `recorded-provider.mjs` returns saved answers without live provider calls.
 
 The guide's meeting capture is committed data. Example data comes from recorded evaluation runs, with source and method notes in the typed content entries.
 

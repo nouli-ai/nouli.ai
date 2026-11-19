@@ -49,7 +49,7 @@ This repository is the website at https://nouli.ai/, built with Astro under [ADR
 - Meet WCAG 2.2 AA, checked by axe on every page and by the reviewer against [Vercel's Web Interface Guidelines](https://github.com/vercel-labs/web-interface-guidelines).
 - Give every pointer interaction a keyboard equivalent, and hit targets of at least 24 px.
 - Give each page a skip link and one ordered heading outline. Carry status in text or shape as well as color, and announce confirmations such as "copied" through a polite live region.
-- Give motion that runs longer than five seconds, such as the terminal replay, a pause control.
+- Give motion that runs longer than five seconds, such as the prototype video, a pause control.
 
 ## Performance
 

@@ -3,7 +3,8 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { example } from "../../src/lib/schemas/example";
 import { networkOf } from "../../src/lib/examples";
-import { homeNetworks } from "../../src/lib/home/teams";
+import { refundReview } from "../../src/lib/home/illustrative";
+import { routeLayout, routeTargets } from "../../src/lib/home/route-map";
 import { sampleRange } from "../../src/lib/examples";
 import { answerOf, shownOptions, summaryOf } from "../../src/lib/home/networks";
 import type { Question } from "../../src/lib/home/networks";
@@ -76,17 +77,35 @@ test("answers keep the most likely option, fractional scores, and all options", 
     "M100.0 200.0C450.0 200.0 450.0 900.0 800.0 900.0",
   );
 });
-test("the home networks are invented, distinct and valid", () => {
-  const home = homeNetworks();
-  const others = [home.hero, home.build, home.trace, ...home.teams];
-  expect(new Set(others.map((n) => n.session)).size).toBe(others.length);
-  for (const n of others) {
-    expect(entries.map((e) => e.id)).not.toContain(n.session);
-    layoutNetwork(n, { pad: 0.12, withBranch: true });
-    for (const step of [...n.steps, ...(n.branch ?? [])])
-      if ("options" in step)
-        expect(Math.abs(step.options.reduce((sum, [, p]) => sum + p, 0) - 1)).toBeLessThan(0.02);
+test("the closing network is invented and valid", () => {
+  expect(entries.map((e) => e.id)).not.toContain(refundReview.session);
+  layoutNetwork(refundReview, { pad: 0.12, withBranch: true });
+  for (const step of [...refundReview.steps, ...(refundReview.branch ?? [])])
+    if ("options" in step)
+      expect(Math.abs(step.options.reduce((sum, [, p]) => sum + p, 0) - 1)).toBeLessThan(0.02);
+});
+
+test("the route map spreads its targets evenly to the right of Nouli", () => {
+  const { agent, nouli, targets } = routeLayout();
+  expect(targets.map((t) => t.runsOn)).toEqual([
+    "Your LLM",
+    "Smaller LLM",
+    "Decision network",
+    "Fine-tuned network",
+    "Code",
+  ]);
+  expect(agent.x).toBeLessThan(nouli.x);
+  const ys = targets.map((t) => t.at.y);
+  expect(ys[0]).toBeCloseTo(0.1);
+  expect(ys.at(-1)).toBeCloseTo(0.9);
+  for (const target of targets) {
+    expect(target.at.x).toBeGreaterThan(nouli.x);
+    expect(target.path.startsWith("M385.0 500.0C")).toBe(true);
   }
+  const [first] = routeTargets;
+  if (!first) throw new Error("Missing route target");
+  expect(routeLayout([first]).targets[0]?.at.y).toBe(0.5);
+  expect(() => routeLayout([])).toThrow("at least one target");
 });
 
 test("example schema rejects ambiguous IDs, missing sources, cycles and invalid distributions", () => {

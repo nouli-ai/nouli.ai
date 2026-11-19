@@ -1,12 +1,14 @@
 # Nouli
 
-> Nouli is a free, MIT-licensed platform for decision networks: small AI decisions chained into bigger ones, each fed the facts and earlier answers it depends on, from every source. Its terminal app, CLI, and Rust library run decision models, which return a probability for each of a fixed set of answers instead of writing text. Every fact, question, and answer is saved locally, so each turn sends only what is new and every step can be traced.
+> Nouli right-sizes intelligence for AI agents. It reads an agent's model calls, splits the work into steps, and runs each step on the cheapest option that gives the same answer: the agent's own LLM, a smaller LLM, a decision network, a fine-tuned network or code. A step moves only after its answers match the LLM's on live calls, and unsure cases still go to the LLM. The hosted platform is in early access; contact nouli@aravindn.com.
+
+The open-source Nouli engine (MIT) is a terminal app, CLI and Rust library for decision networks: small AI decisions chained into bigger ones, each fed the facts and earlier answers it depends on. It runs decision models, which return a probability for each of a fixed set of answers instead of writing text. Every fact, question and answer is saved locally, so each turn sends only what is new and every step can be traced.
 
 Website: https://nouli.ai/
 
 Install with `brew install nouli-ai/tap/nouli` (macOS on Apple silicon) or `curl -fsSL https://nouli.ai/install.sh | sh` (Linux with glibc 2.38+, or macOS without Homebrew). Run `nouli connect` to choose a provider (TypeSafe, OpenAI, OpenRouter, Cloudflare Workers AI, Ollama, llama.cpp, or a custom server), its credentials, and a model. To store a key for a provider already in `~/.nouli/config.toml`, run `nouli auth login PROVIDER`, which reads the key without echo; let the person type it.
 
-Rules for driving Nouli from an agent:
+Rules for driving the Nouli engine from an agent:
 
 - `nouli new NAME [FACT...] -q Q` starts a session; `--from A --from B` blends sessions, so their history is in view.
 - `nouli add SESSION [FACT...] -q Q` adds facts and asks one question; `nouli ask SESSION -q Q` asks without new facts; `nouli whatif SESSION [FACT...] -q Q` asks and saves nothing.
@@ -59,7 +61,7 @@ model from a connected provider rather than these specialized workflows.
 
 ## Examples
 
-Decision networks run on real public data. Each page shows one recorded case
+Routine work run on decision models and code, on real public data. Each page shows one recorded case
 with every answer distribution, plus cases run, model decisions per case,
 median time, cost, and where the cases were routed.
 
@@ -79,6 +81,6 @@ median time, cost, and where the cases were routed.
 
 ## Optional
 
-- [User guide](https://nouli.ai/guide/): setup, sessions, branching, and blending
+- [Engine guide](https://nouli.ai/guide/): setup, sessions, branching, and blending
 - [Rust library](https://raw.githubusercontent.com/nouli-ai/nouli/main/docs/embedding.md): embedding Nouli in an application
 - [Examples](https://nouli.ai/examples/): decision networks run on real public data

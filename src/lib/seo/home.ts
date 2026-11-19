@@ -1,27 +1,16 @@
-import { repository, siteOrigin, huggingFace } from "../site";
-export const homeTitle = "Nouli · the platform for decision networks";
+import { contact, huggingFace, repository, siteOrigin } from "../site";
+export const homeTitle = "Nouli · right-sized intelligence for AI agents";
 export const homeDescription =
-  "Nouli is a free, open-source CLI and Rust library for decision networks: chain small AI decisions into big ones, and trace every step.";
-/** Structured data for the published terminal application. */
+  "Nouli runs each step of your AI agent on the cheapest option that gives the same answer: a smaller LLM, a decision network, a fine-tuned model or code.";
+/** Structured data for the company, its open-source engine and its models. */
 export const homeApplication = {
   "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "@id": `${siteOrigin}/#software`,
+  "@type": "Organization",
+  "@id": `${siteOrigin}/#organization`,
   name: "Nouli",
   url: `${siteOrigin}/`,
   description: homeDescription,
-  applicationCategory: "DeveloperApplication",
-  operatingSystem: "macOS, Linux",
-  license: `${repository}/blob/main/LICENSE`,
+  logo: `${siteOrigin}/brand/bee.svg`,
+  email: contact.email,
   sameAs: [repository, huggingFace],
-  publisher: {
-    "@type": "Organization",
-    name: "Nouli",
-    url: `${siteOrigin}/`,
-    logo: `${siteOrigin}/brand/bee.svg`,
-  },
-  softwareHelp: {
-    "@type": "CreativeWork",
-    url: `${siteOrigin}/guide/`,
-  },
 };

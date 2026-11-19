@@ -26,6 +26,10 @@
 /install.ps1
 /install.sh
 /llms.txt
+/media/nouli-prototype.jpg
+/media/nouli-prototype.mp4
+/media/nouli-prototype.vtt
+/media/nouli-prototype.webm
 /media/tui-controls.webm
 /media/tui-workshop-narrow.webm
 /media/tui-workshop.png

@@ -23,62 +23,25 @@ test("a failed release lookup retains the working generic link", async ({ page }
   );
 });
 
-test("the replay pauses, restarts, and settles when reduced motion changes", async ({ page }) => {
-  const terminal = page.locator("cli-replay");
-  const screen = terminal.locator("pre");
-  await test.step("Load and reveal the recording", async () => {
-    await page.clock.install();
-    await page.goto("/");
-    await expect(terminal).toHaveAttribute("data-columns", "160");
-    await screen.scrollIntoViewIfNeeded();
-  });
-  await test.step("Advance playback", async () => {
-    await page.clock.runFor(3000);
-    await expect(terminal).toHaveAttribute("data-playing", "true");
-  });
-  await test.step("Pause and preserve the screen", async () => {
-    await terminal.getByRole("button", { name: "Pause" }).click();
-    await expect(terminal).toHaveAttribute("data-playing", "false");
-    const paused = await screen.textContent();
-    await page.clock.runFor(3000);
-    expect(await screen.textContent()).toBe(paused);
-  });
-  await test.step("Restart playback", async () => {
-    await terminal.getByRole("button", { name: "Restart" }).click();
-    await page.clock.runFor(1000);
-    await expect(terminal).toHaveAttribute("data-playing", "true");
-  });
-  await test.step("Honor live reduced motion", async () => {
-    await page.emulateMedia({ reducedMotion: "reduce" });
-    await expect(terminal).toHaveAttribute("data-playing", "false");
-    await expect(screen).toContainText("How ready is the workshop?");
-  });
-});
-
-test("small screens load only the narrow recording", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 900 });
-  const recordings: string[] = [];
-  page.on("request", (request) => {
-    if (/\/(wide|narrow)\./u.test(request.url())) recordings.push(request.url());
-  });
-  await page.goto("/");
-  await expect(page.locator("cli-replay")).toHaveAttribute("data-columns", "64");
-  expect(recordings.some((url) => url.includes("narrow."))).toBe(true);
-  expect(recordings.some((url) => url.includes("wide."))).toBe(false);
-});
-
-test("the home page offers commands and the recorded screen without JavaScript", async ({
-  browser,
-}) => {
+test("the home page reads fully without JavaScript", async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
   try {
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-      "The platform for decision networks.",
+      "Right-sized intelligence for AI agents.",
     );
-    await expect(page.locator("decision-net").first()).toContainText("Fight or accept?");
-    await expect(page.locator(".cli-replay-screen")).toContainText("How ready is the workshop?");
+    const map = page.getByRole("group", { name: /support agent's steps/u });
+    for (const target of [
+      "Your LLM",
+      "Smaller LLM",
+      "Decision network",
+      "Fine-tuned network",
+      "Code",
+    ])
+      // eslint-disable-next-line no-await-in-loop -- Each target is checked on the same page.
+      await expect(map).toContainText(target);
+    await expect(page.locator("#how video")).toHaveAttribute("controls", "");
     await expect(page.locator(".install code").first()).toHaveText(
       "brew install nouli-ai/tap/nouli",
     );
@@ -88,6 +51,63 @@ test("the home page offers commands and the recorded screen without JavaScript",
   } finally {
     await context.close();
   }
+});
+
+test("every contact button opens an email to the team", async ({ page }) => {
+  await page.goto("/");
+  const links = page.getByRole("link", { name: /Run Nouli on your traffic|Talk to us/u });
+  await expect(links).toHaveCount(3);
+  for (const link of await links.all())
+    // eslint-disable-next-line no-await-in-loop -- Each link is checked on the same page.
+    await expect(link).toHaveAttribute("href", /^mailto:nouli@aravindn\.com\?subject=/u);
+});
+
+test("the prototype video plays on screen and respects a visitor's pause", async ({ page }) => {
+  await page.goto("/");
+  const video = page.locator("#how video");
+  await video.scrollIntoViewIfNeeded();
+  await expect.poll(() => video.evaluate((el: HTMLVideoElement) => el.paused)).toBe(false);
+  await video.evaluate((el: HTMLVideoElement) => {
+    el.pause();
+  });
+  await page.evaluate(() => {
+    scrollTo(0, 0);
+  });
+  await video.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(300);
+  expect(await video.evaluate((el: HTMLVideoElement) => el.paused)).toBe(true);
+});
+
+test("the prototype video pauses offscreen and resumes on return", async ({ page }) => {
+  await page.goto("/");
+  const video = page.locator("#how video");
+  const paused = (): Promise<boolean> => video.evaluate((el: HTMLVideoElement) => el.paused);
+  await video.scrollIntoViewIfNeeded();
+  await expect.poll(paused).toBe(false);
+  await page.evaluate(() => {
+    scrollTo(0, 0);
+  });
+  await expect.poll(paused).toBe(true);
+  await video.scrollIntoViewIfNeeded();
+  await expect.poll(paused).toBe(false);
+});
+
+test("phones wait for a tap before playing the prototype video", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  const video = page.locator("#how video");
+  await video.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(300);
+  expect(await video.evaluate((el: HTMLVideoElement) => el.paused)).toBe(true);
+});
+
+test("the prototype video stays still under reduced motion", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  const video = page.locator("#how video");
+  await video.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(300);
+  expect(await video.evaluate((el: HTMLVideoElement) => el.paused)).toBe(true);
 });
 
 test("the Windows install command copies with the keyboard", async ({ page, context }) => {
@@ -102,39 +122,6 @@ test("the Windows install command copies with the keyboard", async ({ page, cont
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
     "irm https://nouli.ai/install.ps1 | iex",
   );
-});
-
-test("operation cards switch the build network's mode", async ({ page }) => {
-  await page.goto("/");
-  const modes = page.locator("net-modes");
-  await modes.getByRole("button", { name: /Branch/u }).click();
-  await expect(modes.locator("decision-net")).toHaveAttribute("mode", "branch");
-  await expect(modes.locator("[data-mode-label]")).toHaveText("branch");
-  await expect(modes.locator('.node[data-id="resolve-what-if"]')).toBeVisible();
-});
-
-test("team tabs show one network at a time", async ({ page }) => {
-  await page.goto("/");
-  const tabs = page.locator("net-tabs");
-  await tabs.getByRole("button", { name: "Sales" }).click();
-  await expect(tabs.locator('[data-team-frame="Sales"]')).toBeVisible();
-  await expect(tabs.locator('[data-team-frame="Support"]')).toBeHidden();
-  await expect(tabs.locator("[data-team-caption]")).toHaveText("lead-routing · illustrative");
-});
-
-test("clicking a step opens what it saw, and Escape returns focus", async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/");
-  const inspector = page.locator("net-inspector");
-  const step = inspector.locator('.node[data-id="verdict"]');
-  await step.click();
-  const panel = inspector.locator("[data-inspector]");
-  await expect(panel.locator("h3")).toHaveText("Who is right?");
-  await expect(panel.locator("[data-saw]")).toContainText("What is the vendor disputing?");
-  await expect(panel.locator("[data-answer]")).toHaveText("Vendor");
-  await page.keyboard.press("Escape");
-  await expect(panel).toBeHidden();
-  await expect(step).toBeFocused();
 });
 
 test("Windows guide paths wrap inside a narrow viewport", async ({ page }) => {
